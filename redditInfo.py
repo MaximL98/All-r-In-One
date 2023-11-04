@@ -1,0 +1,2 @@
+CLIENT_ID = "uKhHGMqa2D87e77KO0dtpw"
+SECRET_TOKEN = "Tesi7ytDagfVUkDPQy6LBw7-6jEzQw"

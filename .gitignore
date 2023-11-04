@@ -1,0 +1,5 @@
+output.txt
+pw.txt
+__pycache__/connectToReddit.cpython-311.pyc
+__pycache__/redditInfo.cpython-311.pyc
+__pycache__/tok.cpython-311.pyc
