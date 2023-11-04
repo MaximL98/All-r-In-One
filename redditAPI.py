@@ -1,20 +1,23 @@
 import requests
 import pandas as pd
 from connectToReddit import headers
+import cv2
 import sys
 sys.stdin.reconfigure(encoding='utf-8')
 sys.stdout.reconfigure(encoding='utf-8')
 
+# Function to get requests from reddit API
 def getRequests(headers):
     requests.get('https://oauth.reddit.com/api/v1/me', headers=headers)
     res = requests.get("https://oauth.reddit.com/r/aww/hot",
                    headers=headers, params={'limit': '10', 'show': 'true'})
     return res
 
+# Function to get the data from the request into a data frame
 def getData():
-    df = pd.DataFrame()  # initialize dataframe
+    df = pd.DataFrame()  # Initialize dataframe
     for post in getRequests(headers).json()['data']['children']:
-        # append relevant data to dataframe
+        # Append relevant data to dataframe
         new_row = pd.DataFrame({
             'subreddit': [post['data']['subreddit']],
             'title': [post['data']['title']],
@@ -28,9 +31,8 @@ def getData():
             })
         df = pd.concat([df, new_row], ignore_index=True)
     return(df)
-        
-print(getData())
 
+# Function to write the data into a txt file
 def writeToTxt(df):
     df.to_string('output.txt')
     with open('output.txt', 'w', encoding='utf-8') as f:
@@ -39,10 +41,6 @@ def writeToTxt(df):
 
 writeToTxt(getData())
 
-
-print(getData()['secure_media'][4]['reddit_video']['fallback_url'])
-
-import cv2
 
 # Create a VideoCapture object
 cap = cv2.VideoCapture(getData()['secure_media'][4]['reddit_video']['fallback_url'])
