@@ -41,8 +41,9 @@ def writeToTxt(df):
 
 writeToTxt(getData())
 
+DF = getData()
 
-# Create a VideoCapture object
+""" # Create a VideoCapture object
 cap = cv2.VideoCapture(getData()['secure_media'][4]['reddit_video']['fallback_url'])
 
 # Check if the video file was opened successfully
@@ -66,4 +67,4 @@ while cap.isOpened():
 cap.release()
 
 # Closes all the frames
-cv2.destroyAllWindows()
+cv2.destroyAllWindows() """
