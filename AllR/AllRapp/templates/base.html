@@ -1,0 +1,16 @@
+<!-- base.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <!-- Your footer content goes here -->
+</body>
+</html>
