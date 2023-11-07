@@ -1,9 +1,10 @@
 from django.shortcuts import render, HttpResponse
-
+from redditAPI import getData
 # Create your views here.
 
 def home(request):
-    return render(request, "home.html")
+    DF = getData()
+    return render(request, "home.html", {'data': DF})
 
 def about(request):
     return render(request, "about.html")
