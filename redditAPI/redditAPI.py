@@ -9,7 +9,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 # Function to get requests from reddit API
 def getRequests(headers):
     requests.get('https://oauth.reddit.com/api/v1/me', headers=headers)
-    res = requests.get("https://oauth.reddit.com/r/aww/hot",
+    res = requests.get("https://oauth.reddit.com/r/worldnews/hot",
                    headers=headers, params={'limit': '10', 'show': 'true'})
     return res
 
@@ -34,10 +34,10 @@ def getData():
 
 # Function to write the data into a txt file
 def writeToTxt(df):
-    df.to_string('output.txt')
-    with open('output.txt', 'w', encoding='utf-8') as f:
+    df.to_string('redditAPI/output.txt')
+    with open('redditAPI/output.txt', 'w', encoding='utf-8') as f:
         f.write(df.to_string())
-    df.to_csv('output.txt', sep='\t')
+    df.to_csv('redditAPI/output.txt', sep='\t')
 
 writeToTxt(getData())
 

@@ -5,7 +5,7 @@ from redditInfo import CLIENT_ID, SECRET_TOKEN
 auth = requests.auth.HTTPBasicAuth(CLIENT_ID, SECRET_TOKEN)
 
 def readPassword():
-    with open("pw.txt", "r") as f:
+    with open("redditAPI/pw.txt", "r") as f:
         pw = f.read()
     return pw
 
