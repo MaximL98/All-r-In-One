@@ -1,5 +1,5 @@
 import requests
-from redditInfo import CLIENT_ID, SECRET_TOKEN
+from redditAPI.redditInfo import CLIENT_ID, SECRET_TOKEN
 
 # note that CLIENT_ID refers to 'personal use script' and SECRET_TOKEN to 'token'
 auth = requests.auth.HTTPBasicAuth(CLIENT_ID, SECRET_TOKEN)
@@ -27,4 +27,4 @@ res = requests.post('https://www.reddit.com/api/v1/access_token',
 TOKEN = res.json()['access_token']
 
 # add authorization to our headers dictionary
-headers = {**headers, **{'Authorization': f"bearer {TOKEN}"}}
+HEADERS = {**headers, **{'Authorization': f"bearer {TOKEN}"}}

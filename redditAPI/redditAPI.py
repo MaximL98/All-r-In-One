@@ -1,22 +1,22 @@
 import requests
 import pandas as pd
-from connectToReddit import headers
+from redditAPI.connectToReddit import HEADERS
 import cv2
 import sys
 sys.stdin.reconfigure(encoding='utf-8')
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Function to get requests from reddit API
-def getRequests(headers):
-    requests.get('https://oauth.reddit.com/api/v1/me', headers=headers)
+def getRequests(HEADERS):
+    requests.get('https://oauth.reddit.com/api/v1/me', headers=HEADERS)
     res = requests.get("https://oauth.reddit.com/r/worldnews/hot",
-                   headers=headers, params={'limit': '10', 'show': 'true'})
+                   headers=HEADERS, params={'limit': '10', 'show': 'true'})
     return res
 
 # Function to get the data from the request into a data frame
 def getData():
     df = pd.DataFrame()  # Initialize dataframe
-    for post in getRequests(headers).json()['data']['children']:
+    for post in getRequests(HEADERS).json()['data']['children']:
         # Append relevant data to dataframe
         new_row = pd.DataFrame({
             'subreddit': [post['data']['subreddit']],
@@ -41,7 +41,7 @@ def writeToTxt(df):
 
 writeToTxt(getData())
 
-DF = getData()
+DATA = getData()
 
 """ # Create a VideoCapture object
 cap = cv2.VideoCapture(getData()['secure_media'][4]['reddit_video']['fallback_url'])
