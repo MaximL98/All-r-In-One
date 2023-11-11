@@ -1,8 +1,11 @@
 import requests
 import pandas as pd
-from redditAPI.connectToReddit import HEADERS
 import cv2
 import sys
+
+sys.path.append('C:\\Users\\lmaxp\\OneDrive\\Desktop\\allR\\allR\\redditAPI\\connectToReddit.py')
+from connectToReddit import HEADERS
+
 sys.stdin.reconfigure(encoding='utf-8')
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -42,6 +45,8 @@ def writeToTxt(df):
 writeToTxt(getData())
 
 DATA = getData()
+
+print(DATA['title'][2])
 
 """ # Create a VideoCapture object
 cap = cv2.VideoCapture(getData()['secure_media'][4]['reddit_video']['fallback_url'])

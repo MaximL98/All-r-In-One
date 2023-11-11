@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, scrolledtext
-from redditAPI.redditAPI import DATA
+from redditAPI.redditConn import DATA
 
 class Post:
     def __init__(self, title, content):
@@ -65,7 +65,7 @@ class ForumApp:
         self.scrollable_frame.pack(pady=10, fill="both", expand=True)
 
         for i in range(len(DATA)):
-            self.posts.append(Post(DATA['title'], DATA['secure_media']))
+            self.posts.append(Post(DATA['title'][i], DATA['secure_media'][i]))
 
         self.add_post_buttons()
 
@@ -74,7 +74,7 @@ class ForumApp:
             post_frame = tk.Frame(self.scrollable_frame.scrollable_frame, bg="#2E2E2E")
             post_frame.pack(pady=5, padx=10, anchor="w")
 
-            post_label = ttk.Label(post_frame, text=f"Title: {post.title}\nContent: {post.content}", style="TLabel")
+            post_label = ttk.Label(post_frame, text=f"{post.title}\n {post.content}", style="TLabel")
             post_label.pack()
 
             button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))

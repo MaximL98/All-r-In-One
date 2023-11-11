@@ -1,5 +1,7 @@
 import requests
-from redditAPI.redditInfo import CLIENT_ID, SECRET_TOKEN
+import sys
+sys.path.append('C:\\Users\\lmaxp\\OneDrive\\Desktop\\allR\\allR\\redditAPI\\redditInfo.py')
+from redditInfo import CLIENT_ID, SECRET_TOKEN
 
 # note that CLIENT_ID refers to 'personal use script' and SECRET_TOKEN to 'token'
 auth = requests.auth.HTTPBasicAuth(CLIENT_ID, SECRET_TOKEN)

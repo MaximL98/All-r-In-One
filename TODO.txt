@@ -1,2 +1,1 @@
-finish tech with tim video
-deal with FileNotFoundError: [Errno 2] No such file or directory: 'pw.txt'
+Save all the data from reddit in a database, and pull it into the UI.
