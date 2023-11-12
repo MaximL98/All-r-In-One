@@ -80,6 +80,10 @@ class ForumApp:
         # Bind the mouse wheel event to the main window
         root.bind("<MouseWheel>", self.on_mousewheel)
 
+        # Add a refresh button
+        refresh_button = ttk.Button(root, text="Refresh", command=self.refresh_posts)
+        refresh_button.pack(side="top", anchor="e", padx=10, pady=10)
+
     def add_post_buttons(self):
         for i, post in enumerate(self.posts):
             post_frame = tk.Frame(self.scrollable_frame.scrollable_frame, bg="#2E2E2E")
@@ -155,6 +159,23 @@ class ForumApp:
     def on_mousewheel(self, event):
         # Adjust the scrolling speed as needed
         self.scrollable_frame.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def refresh_posts(self):
+        # Add logic here to refresh or update the posts
+        print("Refreshing posts...")
+
+        # For demonstration purposes, you can clear the existing posts and add new ones
+        self.posts.clear()
+        new_data = []
+        for dat in DATA:
+            self.posts.append(Post(dat[2], dat[3], dat[1]))
+
+        # Clear existing widgets in the scrollable frame
+        for widget in self.scrollable_frame.scrollable_frame.winfo_children():
+            widget.destroy()
+
+        # Add updated posts
+        self.add_post_buttons()
 
 
 if __name__ == "__main__":
