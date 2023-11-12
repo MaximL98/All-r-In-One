@@ -1,0 +1,33 @@
+import sqlite3
+
+# Connect to the SQLite database file
+# Function getting database connection
+def create_connection(path):
+    conn = None
+    try:
+        conn = sqlite3.connect(path)
+        print("Connection to SQLite DB successful")
+    except Error as e:
+        print(f"The error '{e}' occurred")
+
+    return conn
+
+conn = sqlite3.connect('sqlite/allR.db')
+
+# Create a cursor object to execute SQL queries
+cursor = conn.cursor()
+
+# Select all data
+table_name = 'data'
+select_all_query = f'SELECT * FROM {table_name};'
+cursor.execute(select_all_query)
+
+# Fetch all rows from the result set
+rows = cursor.fetchall()
+
+'''# Display the retrieved data
+for row in rows:
+    print(row)'''
+
+DATA = rows
+
