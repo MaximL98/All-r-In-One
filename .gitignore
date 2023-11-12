@@ -3,3 +3,15 @@ pw.txt
 __pycache__/connectToReddit.cpython-311.pyc
 __pycache__/redditInfo.cpython-311.pyc
 __pycache__/tok.cpython-311.pyc
+paths.py
+__pycache__/paths.cpython-311.pyc
+redditAPI/__pycache__/__init__.cpython-311.pyc
+redditAPI/__pycache__/connectToReddit.cpython-311.pyc
+redditAPI/__pycache__/paths.cpython-311.pyc
+redditAPI/__pycache__/redditConn.cpython-311.pyc
+redditAPI/__pycache__/connectToReddit.cpython-311.pyc
+redditAPI/__pycache__/redditConn.cpython-311.pyc
+redditAPI/__pycache__/connectToReddit.cpython-311.pyc
+redditAPI/__pycache__/redditConn.cpython-311.pyc
+sqlite/__pycache__/paths.cpython-311.pyc
+sqlite/__pycache__/selectData.cpython-311.pyc
