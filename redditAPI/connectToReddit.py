@@ -1,6 +1,7 @@
 import requests
 import sys
-sys.path.append('C:\\Users\\lmaxp\\OneDrive\\Desktop\\allR\\allR\\redditAPI\\redditInfo.py')
+from paths import PATH_TO_REDDIT_API
+sys.path.append(PATH_TO_REDDIT_API)
 from redditInfo import CLIENT_ID, SECRET_TOKEN
 
 # note that CLIENT_ID refers to 'personal use script' and SECRET_TOKEN to 'token'

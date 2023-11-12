@@ -2,8 +2,8 @@ import requests
 import pandas as pd
 import cv2
 import sys
-
-sys.path.append('C:\\Users\\lmaxp\\OneDrive\\Desktop\\allR\\allR\\redditAPI\\connectToReddit.py')
+from paths import PATH_TO_REDDIT_API
+sys.path.append(PATH_TO_REDDIT_API)
 from connectToReddit import HEADERS
 
 sys.stdin.reconfigure(encoding='utf-8')

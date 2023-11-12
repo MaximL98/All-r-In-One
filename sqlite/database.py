@@ -1,8 +1,8 @@
 import sqlite3
 from sqlite3 import Error
 import sys
-
-sys.path.append('c:\\Users\\lmaxp\\OneDrive\\Desktop\\allR\\allR\\redditAPI')
+from paths import PATH_TO_REDDIT_API
+sys.path.append(PATH_TO_REDDIT_API)
 from redditConn import DATA
 
 # Function getting database connection
@@ -31,6 +31,18 @@ def execute_query(connection, query, data=None):
     except Error as e:
         print(f"The error '{e}' occurred")
 
+def delete_rows(connection, table_name, start_row, end_row):
+    delete_query = f'DELETE FROM {table_name} WHERE rowid BETWEEN {start_row} AND {end_row};'
+    cursor = connection.cursor()
+    try:
+        cursor.execute(delete_query)
+        connection.commit()
+        print(f"Rows {start_row} to {end_row} deleted successfully")
+    except sqlite3.Error as e:
+        print(f"The error '{e}' occurred")
+
+
+
 
 # Create data table
 create_data_table = """
@@ -52,10 +64,12 @@ execute_query(conn, drop_table_sql)'''
 
 # Define the SQL command to insert data into the 'data' table
 insert_data_sql = """
-    INSERT INTO data (theme, subreddit, title, content)
+    INSERT OR IGNORE INTO data (theme, subreddit, title, content)
     VALUES (?, ?, ?, ?);
 """
 
+
+delete_rows(conn, 'data', 0, 10)
 for i in range(2, len(DATA)):
     # Data to be inserted
     sample_data = ('Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
