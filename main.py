@@ -8,9 +8,10 @@ from selectData import DATA
 
 
 class Post:
-    def __init__(self, title, content):
+    def __init__(self, title, content, subreddit):
         self.title = title
         self.content = content
+        self.subreddit = subreddit
         self.comments = []
 
 
@@ -36,7 +37,7 @@ class ScrollableFrame(tk.Frame):
 class ForumApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("ALL /r In One")
+        self.root.title("ALL r/ In One")
         self.root.geometry("800x600")  # Set the initial window size
 
         # Dark mode theme configuration
@@ -72,7 +73,7 @@ class ForumApp:
         self.scrollable_frame.pack(pady=10, fill="both", expand=True)
 
         for dat in DATA:
-            self.posts.append(Post(dat[2], dat[3]))
+            self.posts.append(Post(dat[2], dat[3], dat[1]))
 
         self.add_post_buttons()
 
@@ -88,8 +89,10 @@ class ForumApp:
 
             post_text.tag_configure("title", font=("Helvetica", 14, "bold"), justify="center")
             post_text.tag_configure("content", font=("Helvetica", 12))
+            post_text.tag_configure("subreddit", font=("Helvetica", 11))
 
-            post_text.insert("1.0", f"{post.content}", "content")
+            post_text.insert("1.0", f"r/{post.subreddit}", "subreddit")
+            post_text.insert("1.0", f"{post.content}\n\n", "content")
             post_text.insert("1.0", f"{post.title}\n\n", "title")
             
             post_text.config(state=tk.DISABLED)  # Make the Text widget read-only
