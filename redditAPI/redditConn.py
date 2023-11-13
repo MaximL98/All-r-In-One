@@ -27,13 +27,11 @@ def getData():
             'selftext': [post['data']['selftext']],
             'secure_media' : [post['data']['secure_media']],
             'link_url': [post['data']['url']],
-            'upvote_ratio': [post['data']['upvote_ratio']],
-            'ups': [post['data']['ups']],
-            'downs': [post['data']['downs']],
-            'score': [post['data']['score']]
+            'name': [post['data']['name']]
             })
         df = pd.concat([df, new_row], ignore_index=True)
     return(df)
+
 
 # Function to write the data into a txt file
 def writeToTxt(df):
@@ -45,8 +43,8 @@ def writeToTxt(df):
 writeToTxt(getData())
 
 DATA = getData()
+getComments(HEADERS)
 
-print(DATA['title'][2])
 
 """ # Create a VideoCapture object
 cap = cv2.VideoCapture(getData()['secure_media'][4]['reddit_video']['fallback_url'])
