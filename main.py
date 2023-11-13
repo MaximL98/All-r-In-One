@@ -4,7 +4,8 @@ from paths import PATH_TO_SQLITE
 import sys
 
 sys.path.append(PATH_TO_SQLITE)
-from selectData import DATA
+from selectData import get_data
+from database import refresh_data
 
 
 class Post:
@@ -72,8 +73,9 @@ class ForumApp:
         self.scrollable_frame = ScrollableFrame(root, bg="#2E2E2E")
         self.scrollable_frame.pack(pady=10, fill="both", expand=True)
 
-        for dat in DATA:
-            self.posts.append(Post(dat[2], dat[3], dat[1]))
+        selected_data = get_data()
+        for data in selected_data:
+            self.posts.append(Post(data[2], data[3], data[1]))
 
         self.add_post_buttons()
 
@@ -165,10 +167,12 @@ class ForumApp:
         print("Refreshing posts...")
 
         # For demonstration purposes, you can clear the existing posts and add new ones
+        refresh_data()
         self.posts.clear()
-        new_data = []
-        for dat in DATA:
-            self.posts.append(Post(dat[2], dat[3], dat[1]))
+        
+        selected_data = get_data()
+        for data in selected_data:
+            self.posts.append(Post(data[2], data[3], data[1]))
 
         # Clear existing widgets in the scrollable frame
         for widget in self.scrollable_frame.scrollable_frame.winfo_children():

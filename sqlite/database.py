@@ -41,7 +41,17 @@ def delete_rows(connection, table_name, start_row, end_row):
     except sqlite3.Error as e:
         print(f"The error '{e}' occurred")
 
-
+def refresh_data():
+    conn = create_connection('sqlite/allR.db')
+    insert_data_sql = """
+    INSERT OR IGNORE INTO data (theme, subreddit, title, content)
+    VALUES (?, ?, ?, ?);
+    """
+    delete_rows(conn, 'data', 0, 10)
+    for i in range(2, len(DATA)):
+        # Data to be inserted
+        data = ('Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
+        execute_query(conn, insert_data_sql, data)
 
 
 # Create data table
@@ -69,11 +79,7 @@ insert_data_sql = """
 """
 
 
-delete_rows(conn, 'data', 0, 10)
-for i in range(2, len(DATA)):
-    # Data to be inserted
-    sample_data = ('Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
-    execute_query(conn, insert_data_sql, sample_data)
+
 
 # Close Connection
 conn.close()
