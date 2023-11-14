@@ -43,7 +43,6 @@ def writeToTxt(df):
 writeToTxt(getData())
 
 DATA = getData()
-getComments(HEADERS)
 
 
 """ # Create a VideoCapture object
