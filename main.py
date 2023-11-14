@@ -75,7 +75,7 @@ class ForumApp:
 
         selected_data = get_data()
         for data in selected_data:
-            self.posts.append(Post(data[2], data[3], data[1]))
+            self.posts.append(Post(data[3], data[4], data[2]))
 
         self.add_post_buttons()
 
@@ -172,7 +172,7 @@ class ForumApp:
         
         selected_data = get_data()
         for data in selected_data:
-            self.posts.append(Post(data[2], data[3], data[1]))
+            self.posts.append(Post(data[3], data[4], data[2]))
 
         # Clear existing widgets in the scrollable frame
         for widget in self.scrollable_frame.scrollable_frame.winfo_children():

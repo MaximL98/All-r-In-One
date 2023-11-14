@@ -44,19 +44,24 @@ def delete_rows(connection, table_name, start_row, end_row):
 def refresh_data():
     conn = create_connection('sqlite/allR.db')
     insert_data_sql = """
-    INSERT OR IGNORE INTO data (theme, subreddit, title, content)
-    VALUES (?, ?, ?, ?);
+    INSERT OR IGNORE INTO data (post_id, theme, subreddit, title, content)
+    VALUES (?, ?, ?, ?, ?);
     """
     delete_rows(conn, 'data', 0, 10)
     for i in range(2, len(DATA)):
         # Data to be inserted
-        data = ('Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
+        data = (DATA['name'][i][3:], 'Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
         execute_query(conn, insert_data_sql, data)
 
+# SQL command to drop the table
+'''table_name = 'data'
+drop_table_sql = f'DROP TABLE IF EXISTS {table_name};'
+execute_query(conn, drop_table_sql)'''
 
 # Create data table
 create_data_table = """
 CREATE TABLE IF NOT EXISTS data (
+    post_id TEXT PRIMARY KEY NOT NULL,
     theme TEXT NOT NULL,
     subreddit TEXT NOT NULL,
     title TEXT NOT NULL,
@@ -66,10 +71,7 @@ CREATE TABLE IF NOT EXISTS data (
 execute_query(conn, create_data_table)  
 
 
-# SQL command to drop the table
-'''table_name = 'data'
-drop_table_sql = f'DROP TABLE IF EXISTS {table_name};'
-execute_query(conn, drop_table_sql)'''
+
 
 
 # Define the SQL command to insert data into the 'data' table
