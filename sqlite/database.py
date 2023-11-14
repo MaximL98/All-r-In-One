@@ -53,6 +53,18 @@ def refresh_data():
         data = (DATA['name'][i][3:], 'Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
         execute_query(conn, insert_data_sql, data)
 
+def insert_comments():
+    conn = create_connection('sqlite/allR.db')
+    insert_data_sql = """
+    INSERT OR IGNORE INTO comments (post_id, content)
+    VALUES (?, ?);
+    """
+    delete_rows(conn, 'comments', 0, 10)
+    for i in range(2, len(DATA)):
+        # Data to be inserted
+        data = (DATA['name'][i][3:], 'Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
+        execute_query(conn, insert_data_sql, data)
+
 # SQL command to drop the table
 '''table_name = 'data'
 drop_table_sql = f'DROP TABLE IF EXISTS {table_name};'
@@ -70,6 +82,14 @@ CREATE TABLE IF NOT EXISTS data (
 """
 execute_query(conn, create_data_table)  
 
+# Create comment table
+create_comment_table = """
+CREATE TABLE IF NOT EXISTS comments (
+    post_id TEXT PRIMARY KEY NOT NULL,
+    content TEXT NOT NULL
+);
+"""
+execute_query(conn, create_comment_table)  
 
 
 

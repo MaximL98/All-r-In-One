@@ -9,7 +9,8 @@ from database import refresh_data
 
 
 class Post:
-    def __init__(self, title, content, subreddit):
+    def __init__(self, title, content, subreddit, id):
+        self.id = id
         self.title = title
         self.content = content
         self.subreddit = subreddit
@@ -75,7 +76,7 @@ class ForumApp:
 
         selected_data = get_data()
         for data in selected_data:
-            self.posts.append(Post(data[3], data[4], data[2]))
+            self.posts.append(Post(data[3], data[4], data[2], data[0]))
 
         self.add_post_buttons()
 
@@ -128,6 +129,8 @@ class ForumApp:
         close_button = ttk.Button(comment_window, text="Close", command=comment_window.destroy)
         close_button.pack(pady=10)
 
+        print(post.id)
+
     def make_links_clickable(self, text_widget, post_content):
         text_widget.tag_config("hyperlink", foreground="blue", underline=True)
 
@@ -172,7 +175,7 @@ class ForumApp:
         
         selected_data = get_data()
         for data in selected_data:
-            self.posts.append(Post(data[3], data[4], data[2]))
+            self.posts.append(Post(data[3], data[4], data[2], data[0]))
 
         # Clear existing widgets in the scrollable frame
         for widget in self.scrollable_frame.scrollable_frame.winfo_children():
