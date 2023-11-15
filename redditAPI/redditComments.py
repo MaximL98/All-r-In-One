@@ -8,7 +8,7 @@ def readPassword():
         pw = f.read()
     return pw
 
-def get_comments(subreddit_name, post_id, comment_limit):
+def get_comments(post_id, comment_limit):
     # Create a Reddit instance
     reddit = praw.Reddit(client_id=CLIENT_ID,
                          client_secret=SECRET_TOKEN,
@@ -17,7 +17,6 @@ def get_comments(subreddit_name, post_id, comment_limit):
                          user_agent='MyBot/0.0.1')
 
     # Access the subreddit and get the submission (post) by ID
-    subreddit = reddit.subreddit(subreddit_name)
     submission = reddit.submission(id=post_id)
 
     # Access the comments and print them
@@ -31,8 +30,7 @@ def get_comments(subreddit_name, post_id, comment_limit):
         df.append(comment.body)
     return df
 
-subreddit_name = 'worldnews'
-post_id = '17uz6xa'
+'''post_id = '17uz6xa'
 comment_limit = 10
 
 #get_comments(subreddit_name, post_id, comment_limit)
@@ -43,4 +41,4 @@ def writeToTxt(comments, file_path='redditAPI/comments.txt'):
             f.write(f"{i+1}. {comment}\n")
             f.write('\n')  # Add a newline between comments
 
-writeToTxt(get_comments(subreddit_name, post_id, comment_limit))
+writeToTxt(get_comments(post_id, comment_limit))'''

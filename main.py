@@ -6,7 +6,7 @@ import sys
 sys.path.append(PATH_TO_SQLITE)
 from selectData import get_data
 from database import refresh_data
-
+from selectComments import get_comments
 
 class Post:
     def __init__(self, title, content, subreddit, id):
@@ -122,14 +122,20 @@ class ForumApp:
             comment_window, wrap="word", width=50, height=10, bg="#2E2E2E", fg="white", padx=4, pady=2
         )
         comment_list.pack(pady=10)
-        comment_list.insert("1.0", "\n".join(f"Comment: {comment}" for comment in post.comments))
+
+        
+        all_comments = get_comments(post.id)
+        for comment in all_comments:
+            post.comments.append(comment[0])
+
+        comment_list.insert("1.0", "\n".join(f"Comment: {comment}\n" for comment in post.comments))
         comment_list.config(state=tk.DISABLED)  # Make the Text widget read-only
         self.make_links_clickable(comment_list, post.content)
 
         close_button = ttk.Button(comment_window, text="Close", command=comment_window.destroy)
         close_button.pack(pady=10)
 
-        print(post.id)
+       
 
     def make_links_clickable(self, text_widget, post_content):
         text_widget.tag_config("hyperlink", foreground="blue", underline=True)

@@ -4,6 +4,7 @@ import sys
 from paths import PATH_TO_REDDIT_API
 sys.path.append(PATH_TO_REDDIT_API)
 from redditConn import DATA
+from redditComments import get_comments
 
 # Function getting database connection
 def create_connection(path):
@@ -53,20 +54,22 @@ def refresh_data():
         data = (DATA['name'][i][3:], 'Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
         execute_query(conn, insert_data_sql, data)
 
-def insert_comments():
+def insert_comments(post_id, comment_limit):
+    comments = get_comments(post_id, comment_limit)
     conn = create_connection('sqlite/allR.db')
     insert_data_sql = """
     INSERT OR IGNORE INTO comments (post_id, content)
     VALUES (?, ?);
     """
-    delete_rows(conn, 'comments', 0, 10)
-    for i in range(2, len(DATA)):
+    delete_rows(conn, 'comments', 0, comment_limit)
+    for comment in comments:
+        print(comment)
         # Data to be inserted
-        data = (DATA['name'][i][3:], 'Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
+        data = (post_id, comment)
         execute_query(conn, insert_data_sql, data)
 
 # SQL command to drop the table
-'''table_name = 'data'
+'''table_name = 'comments'
 drop_table_sql = f'DROP TABLE IF EXISTS {table_name};'
 execute_query(conn, drop_table_sql)'''
 
@@ -85,7 +88,7 @@ execute_query(conn, create_data_table)
 # Create comment table
 create_comment_table = """
 CREATE TABLE IF NOT EXISTS comments (
-    post_id TEXT PRIMARY KEY NOT NULL,
+    post_id TEXT NOT NULL,
     content TEXT NOT NULL
 );
 """
@@ -99,8 +102,6 @@ insert_data_sql = """
     INSERT OR IGNORE INTO data (theme, subreddit, title, content)
     VALUES (?, ?, ?, ?);
 """
-
-
 
 
 # Close Connection

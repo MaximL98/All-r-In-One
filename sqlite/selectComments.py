@@ -1,4 +1,5 @@
 import sqlite3
+from database import insert_comments
 
 # Connect to the SQLite database file
 # Function getting database connection
@@ -14,19 +15,20 @@ def create_connection(path):
 
 conn = create_connection('sqlite/allR.db')
 
-def get_comments():
+def get_comments(post_id):
+    insert_comments(post_id, 10)
     # Create a cursor object to execute SQL queries
     cursor = conn.cursor()
 
-    # Select all data
-    table_name = 'data'
-    select_all_query = f'SELECT * FROM {table_name};'
-    cursor.execute(select_all_query)
+    # Select all comments
+    select_query = "SELECT content FROM comments WHERE post_id = ?"
+    cursor.execute(select_query, (post_id,))
 
     # Fetch all rows from the result set
     rows = cursor.fetchall()
 
     return rows
+
 
 
 
