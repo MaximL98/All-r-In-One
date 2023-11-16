@@ -24,3 +24,4 @@ redditAPI/__pycache__/connectToReddit.cpython-311.pyc
 redditAPI/__pycache__/redditConn.cpython-311.pyc
 redditAPI/__pycache__/redditInfo.cpython-311.pyc
 sqlite/__pycache__/database.cpython-311.pyc
+sqlite/allR.db
