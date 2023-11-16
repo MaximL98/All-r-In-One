@@ -1,1 +1,3 @@
-Save all the data from reddit in a database, and pull it into the UI.
+1. Make the comment section bigger.
+2. Create "main" page.
+3. Add option to create "Theme folder", so user can put number of subreddits under one folder.
