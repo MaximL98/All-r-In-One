@@ -63,7 +63,6 @@ def insert_comments(post_id, comment_limit):
     """
     delete_rows(conn, 'comments', 0, comment_limit)
     for comment in comments:
-        print(comment)
         # Data to be inserted
         data = (post_id, comment)
         execute_query(conn, insert_data_sql, data)
