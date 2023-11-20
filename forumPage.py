@@ -35,12 +35,35 @@ class ScrollableFrame(tk.Frame):
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
+class ForumPage(tk.Toplevel):
+    def __init__(self, master):
+        tk.Toplevel.__init__(self, master)
+        self.master = master
+        self.title("Forum Page")
+        self.geometry("800x600")
+        self.forum_app = ForumApp(self)
+
+        
 
 class ForumApp:
     def __init__(self, root):
         self.root = root
         self.root.title("ALL r/ In One")
         self.root.geometry("800x600")  # Set the initial window size
+
+        # Navigation Bar
+        self.navbar_frame = ttk.Frame(root, style="TFrame")
+        self.navbar_frame.pack(side="top", fill="x")
+
+        home_button = ttk.Button(self.navbar_frame, text="Home", command=self.go_home)
+        home_button.pack(side="left", padx=10, pady=5)
+
+        about_button = ttk.Button(self.navbar_frame, text="About", command=self.show_about)
+        about_button.pack(side="left", padx=10, pady=5)
+
+        contact_button = ttk.Button(self.navbar_frame, text="Contact", command=self.show_contact)
+        contact_button.pack(side="left", padx=10, pady=5)
+
 
         # Dark mode theme configuration
         style = ttk.Style()
@@ -66,6 +89,16 @@ class ForumApp:
                         background="#2E2E2E",  # Dark background color for labels
                         foreground="white")  # White text for labels
 
+        style.configure("Red.TButton",
+                background="red",  # Change background color to red
+                hoverbackground="#CC0000"  # Hover background color for red
+                )
+        style.map("Red.TButton",
+                  background=[("active", "#CC0000")]  # Background color for buttons when clicked
+                  )
+
+        
+
         self.posts = []
 
         self.title_label = ttk.Label(root, text="Forum Posts", font=("Helvetica", 16), style="TLabel")
@@ -85,7 +118,37 @@ class ForumApp:
 
         # Add a refresh button
         refresh_button = ttk.Button(root, text="Refresh", command=self.refresh_posts)
-        refresh_button.pack(side="top", anchor="e", padx=10, pady=10)
+        refresh_button.pack(side="right", anchor="e", padx=10, pady=10)
+
+        # Add a button to go back to the main window
+        back_button = ttk.Button(root, text="Back to Main", command=self.go_back_to_main, style="Red.TButton")
+        back_button.pack(side="left", anchor="e", padx=10, pady=10)
+
+
+        
+
+    def go_home(self):
+        # Destroy the current forum window
+        self.root.destroy()
+
+        # Create an instance of MainPage and run its main loop
+        root = Tk()
+        app = MainPage(root)
+        root.mainloop()
+        
+    def show_about(self):
+        # Define the functionality to show the About page
+        print("Showing About Page")
+
+    def show_contact(self):
+        # Define the functionality to show the Contact page
+        print("Showing Contact Page")
+
+
+    def go_back_to_main(self):
+        self.root.destroy()
+
+        
 
     def add_post_buttons(self):
         for i, post in enumerate(self.posts):
@@ -189,6 +252,8 @@ class ForumApp:
 
         # Add updated posts
         self.add_post_buttons()
+
+    
 
 
 if __name__ == "__main__":
