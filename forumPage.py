@@ -35,15 +35,6 @@ class ScrollableFrame(tk.Frame):
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
-class ForumPage(tk.Toplevel):
-    def __init__(self, master):
-        tk.Toplevel.__init__(self, master)
-        self.master = master
-        self.title("Forum Page")
-        self.geometry("800x600")
-        self.forum_app = ForumApp(self)
-
-        
 
 class ForumApp:
     def __init__(self, root):
@@ -83,7 +74,74 @@ class ForumApp:
                   background=[("active", "#CC0000")]  # Background color for buttons when clicked
                   )
 
+        def toggle_menu():
+
+            def collapse_toggle_menu():
+                toggle_menu_frame.destroy()
+                toggle_btn.config(text='☰')
+                toggle_btn.config(command=toggle_menu)
+
+            def home_page():
+                home_frame = tk.Frame(root)
+                lb = tk.Label(home_frame, text='Home Page')
+                lb.pack()
+                home_frame.pack(pady=20)
+
+            def delete_pages():
+                for frame in self.scrollable_frame.winfo_children():
+                    frame.destroy()
+
+            def hide_indicators():
+                home_indicate.config(bg='grey')
+                example_indicate.config(bg='grey')
+
+            def indicate(lb, page):
+                hide_indicators()
+                lb.config(bg='white')
+                delete_pages()
+                page()
+
+            toggle_menu_frame = tk.Frame(root, bg='grey')
+            
+            # Just an example for later, will need to add 60 to y in placement for each new button
+            home_btn = tk.Button(toggle_menu_frame, text='Home', font=('Bold', 15), bd=0, bg='grey', fg='white',
+                                  activebackground='grey', activeforeground='white', command=lambda:indicate(home_indicate, home_page))
+            home_btn.place(x=20, y=20)
+
+            home_indicate = tk.Label(toggle_menu_frame, text='', bg='grey')
+            home_indicate.place(x=3, y=20, width=5, height=40)
+
+            example_btn = tk.Button(toggle_menu_frame, text='Home', font=('Bold', 15), bd=0, bg='grey', fg='white',
+                                  activebackground='grey', activeforeground='white', command=lambda:indicate(example_indicate))
+            example_btn.place(x=20, y=80)
+
+            example_indicate = tk.Label(toggle_menu_frame, text='', bg='grey')
+            example_indicate.place(x=3, y=80, width=5, height=40)
+
+            window_height = root.winfo_height()
+            toggle_menu_frame.place(x=0, y=50, height=window_height, width=200)
+
+            toggle_btn.config(text='X')
+            toggle_btn.config(command=collapse_toggle_menu)
+
+
         
+
+
+        head_frame = tk.Frame(root, bg='grey', highlightbackground='white', highlightthickness=1)
+
+        toggle_btn = tk.Button(head_frame, text='☰', bg='grey', fg='white', font=('Bold', 20),
+                                bd=0,activebackground='grey', activeforeground='white', command=toggle_menu)
+ 
+        toggle_btn.pack(side=tk.LEFT, anchor=tk.W)
+
+        head_frame.pack(side=tk.TOP, fill=tk.X)
+        head_frame.pack_propagate(False)
+        head_frame.configure(height=50)
+
+        
+        
+
 
         self.posts = []
 
@@ -108,10 +166,6 @@ class ForumApp:
 
 
 
-   
-
-
-        
 
     def add_post_buttons(self):
         for i, post in enumerate(self.posts):
@@ -129,7 +183,7 @@ class ForumApp:
             post_text.insert("1.0", f"{post.title}\n\n", "title")
             
             post_text.config(state=tk.DISABLED)  # Make the Text widget read-only
-            
+
             post_text.pack(expand=True, fill="both")
 
             button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
