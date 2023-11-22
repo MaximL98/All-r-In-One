@@ -51,20 +51,6 @@ class ForumApp:
         self.root.title("ALL r/ In One")
         self.root.geometry("800x600")  # Set the initial window size
 
-        # Navigation Bar
-        self.navbar_frame = ttk.Frame(root, style="TFrame")
-        self.navbar_frame.pack(side="top", fill="x")
-
-        home_button = ttk.Button(self.navbar_frame, text="Home", command=self.go_home)
-        home_button.pack(side="left", padx=10, pady=5)
-
-        about_button = ttk.Button(self.navbar_frame, text="About", command=self.show_about)
-        about_button.pack(side="left", padx=10, pady=5)
-
-        contact_button = ttk.Button(self.navbar_frame, text="Contact", command=self.show_contact)
-        contact_button.pack(side="left", padx=10, pady=5)
-
-
         # Dark mode theme configuration
         style = ttk.Style()
         style.theme_use("clam")  # Use the clam theme as a base
@@ -120,33 +106,10 @@ class ForumApp:
         refresh_button = ttk.Button(root, text="Refresh", command=self.refresh_posts)
         refresh_button.pack(side="right", anchor="e", padx=10, pady=10)
 
-        # Add a button to go back to the main window
-        back_button = ttk.Button(root, text="Back to Main", command=self.go_back_to_main, style="Red.TButton")
-        back_button.pack(side="left", anchor="e", padx=10, pady=10)
 
 
-        
+   
 
-    def go_home(self):
-        # Destroy the current forum window
-        self.root.destroy()
-
-        # Create an instance of MainPage and run its main loop
-        root = Tk()
-        app = MainPage(root)
-        root.mainloop()
-        
-    def show_about(self):
-        # Define the functionality to show the About page
-        print("Showing About Page")
-
-    def show_contact(self):
-        # Define the functionality to show the Contact page
-        print("Showing Contact Page")
-
-
-    def go_back_to_main(self):
-        self.root.destroy()
 
         
 
@@ -166,8 +129,7 @@ class ForumApp:
             post_text.insert("1.0", f"{post.title}\n\n", "title")
             
             post_text.config(state=tk.DISABLED)  # Make the Text widget read-only
-            self.make_links_clickable(post_text, post.content)
-
+            
             post_text.pack(expand=True, fill="both")
 
             button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
@@ -186,49 +148,15 @@ class ForumApp:
         )
         comment_list.pack(pady=10)
 
-        
         all_comments = get_comments(post.id)
         for comment in all_comments:
             post.comments.append(comment[0])
 
         comment_list.insert("1.0", "\n".join(f"Comment: {comment}\n" for comment in post.comments))
         comment_list.config(state=tk.DISABLED)  # Make the Text widget read-only
-        self.make_links_clickable(comment_list, post.content)
 
         close_button = ttk.Button(comment_window, text="Close", command=comment_window.destroy)
         close_button.pack(pady=10)
-
-       
-
-    def make_links_clickable(self, text_widget, post_content):
-        text_widget.tag_config("hyperlink", foreground="blue", underline=True)
-
-        start = "1.0"
-        while True:
-            start = text_widget.search("http://", start, stopindex=tk.END)
-            if not start:
-                break
-
-            end = text_widget.search(r"\s", start, stopindex=tk.END)
-            if not end:
-                end = tk.END
-
-            link_start = self.convert_to_float_index(start)
-            link_end = self.convert_to_float_index(end)
-
-            text_widget.tag_add("hyperlink", link_start, link_end)
-            text_widget.tag_bind("hyperlink", "<Button-1>", lambda e, url=post_content[int(link_start.split('.')[0]) - 1][int(link_start.split('.')[1]):int(link_end.split('.')[0]) - 1][int(link_end.split('.')[1]):]: self.on_link_click(e, url))
-
-            start = end
-
-    def convert_to_float_index(self, index):
-        # Convert index "line.column" to "line.column"
-        line, column = map(int, index.split("."))
-        return f"{line}.{column}"
-
-    def on_link_click(self, event, url):
-        print(f"Opening link: {url}")
-        # You can customize this part to open the link in a web browser or perform other actions.
 
     def on_mousewheel(self, event):
         # Adjust the scrolling speed as needed
