@@ -67,8 +67,20 @@ def insert_comments(post_id, comment_limit):
         data = (post_id, comment)
         execute_query(conn, insert_data_sql, data)
 
+def insert_theme(theme, subreddits):
+    conn = create_connection('sqlite/allR.db')
+    insert_data_sql = """
+    INSERT OR IGNORE INTO themeSubs (theme, subreddits)
+    VALUES (?, ?);
+    """
+    for subreddit in subreddits:
+        print(subreddit)
+        # Data to be inserted
+        data = (theme, subreddit)
+        execute_query(conn, insert_data_sql, data)
+
 # SQL command to drop the table
-'''table_name = 'comments'
+'''table_name = 'themeSubs'
 drop_table_sql = f'DROP TABLE IF EXISTS {table_name};'
 execute_query(conn, drop_table_sql)'''
 
@@ -93,7 +105,14 @@ CREATE TABLE IF NOT EXISTS comments (
 """
 execute_query(conn, create_comment_table)  
 
-
+# Create theme table
+create_theme_table = """
+    CREATE TABLE IF NOT EXISTS themeSubs (
+        theme TEXT NOT NULL,
+        subreddits TEXT NOT NULL
+    );
+    """
+execute_query(conn, create_theme_table)
 
 
 # Define the SQL command to insert data into the 'data' table

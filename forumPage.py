@@ -1,11 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import simpledialog
 from paths import PATH_TO_SQLITE
 import sys
 
 sys.path.append(PATH_TO_SQLITE)
 from selectData import get_data
-from database import refresh_data
+from database import refresh_data, insert_theme
 from selectComments import get_comments
 
 class Post:
@@ -34,6 +35,12 @@ class ScrollableFrame(tk.Frame):
 
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
+
+
+class Subreddits:
+    def __init__(self, theme, subreddits):
+        self.theme = theme
+        self.subreddits = subreddits
 
 
 class ForumApp:
@@ -82,10 +89,16 @@ class ForumApp:
                 toggle_btn.config(command=toggle_menu)
 
             def home_page():
-                home_frame = tk.Frame(root)
-                lb = tk.Label(home_frame, text='Home Page')
-                lb.pack()
-                home_frame.pack(pady=20)
+                self.posts = []
+
+                self.scrollable_frame = ScrollableFrame(self.scrollable_frame, bg="#2E2E2E")
+                self.scrollable_frame.pack(fill="both", expand=True)
+
+                selected_data = get_data()
+                for data in selected_data:
+                    self.posts.append(Post(data[3], data[4], data[2], data[0]))
+
+                self.add_post_buttons()
 
             def delete_pages():
                 for frame in self.scrollable_frame.winfo_children():
@@ -104,13 +117,17 @@ class ForumApp:
             toggle_menu_frame = tk.Frame(root, bg='grey')
             
             # Just an example for later, will need to add 60 to y in placement for each new button
-            home_btn = tk.Button(toggle_menu_frame, text='Home', font=('Bold', 15), bd=0, bg='grey', fg='white',
-                                  activebackground='grey', activeforeground='white', command=lambda:indicate(home_indicate, home_page))
-            home_btn.place(x=20, y=20)
+            obj = Subreddits('News', ['worldnews'])
+            
+            for key, value in obj.__dict__.items():  
+                home_btn = tk.Button(toggle_menu_frame, text=obj.theme, font=('Bold', 15), bd=0, bg='grey', fg='white',
+                                    activebackground='grey', activeforeground='white', command=lambda:indicate(home_indicate, home_page))
+                home_btn.place(x=20, y=20)
 
-            home_indicate = tk.Label(toggle_menu_frame, text='', bg='grey')
-            home_indicate.place(x=3, y=20, width=5, height=40)
+                home_indicate = tk.Label(toggle_menu_frame, text='', bg='grey')
+                home_indicate.place(x=3, y=20, width=5, height=40)
 
+            
             example_btn = tk.Button(toggle_menu_frame, text='Home', font=('Bold', 15), bd=0, bg='grey', fg='white',
                                   activebackground='grey', activeforeground='white', command=lambda:indicate(example_indicate))
             example_btn.place(x=20, y=80)
@@ -160,17 +177,31 @@ class ForumApp:
         # Bind the mouse wheel event to the main window
         root.bind("<MouseWheel>", self.on_mousewheel)
 
-        # Add a refresh button
+        # Refresh button
         refresh_button = ttk.Button(root, text="Refresh", command=self.refresh_posts)
         refresh_button.pack(side="right", anchor="e", padx=10, pady=10)
 
+        # Add theme button
+        self.add_theme_button = tk.Button(root, text="Add Theme", command=self.show_theme_popup)
+        self.add_theme_button.pack(side="left", anchor="e", padx=10, pady=10)
 
+    def show_theme_popup(self):
+        theme = simpledialog.askstring("Add Theme", "Enter Theme:")
+        subreddits = simpledialog.askstring("Add Theme", "Enter Subreddits (comma-separated):")
 
+        # Check if the user clicked Cancel
+        if theme is not None and subreddits is not None:
+            print(f"Theme: {theme}, Subreddits: {subreddits}")
+            insert_theme(theme,subreddits.split(','))
+        else:
+            print("User canceled the input.")
+
+        
 
     def add_post_buttons(self):
         for i, post in enumerate(self.posts):
             post_frame = tk.Frame(self.scrollable_frame.scrollable_frame, bg="#2E2E2E")
-            post_frame.pack(pady=5, padx=10, anchor="w")
+            post_frame.pack(pady=5, padx=75)
 
             post_text = tk.Text(post_frame, wrap="word", bg="#2E2E2E", fg="white", padx=4, pady=2)
 
