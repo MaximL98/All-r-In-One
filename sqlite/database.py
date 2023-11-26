@@ -3,8 +3,10 @@ from sqlite3 import Error
 import sys
 from paths import PATH_TO_REDDIT_API
 sys.path.append(PATH_TO_REDDIT_API)
-from redditConn import DATA
+sys.path.append(PATH_TO_SQLITE)
+from redditConn import getData
 from redditComments import get_comments
+from selectTheme import get_themes
 
 # Function getting database connection
 def create_connection(path):
@@ -48,6 +50,11 @@ def refresh_data():
     INSERT OR IGNORE INTO data (post_id, theme, subreddit, title, content)
     VALUES (?, ?, ?, ?, ?);
     """
+    #TODO HERE################
+    subreddit = get_themes
+    DATA = getData(subreddit)
+    ##########################
+    
     delete_rows(conn, 'data', 0, 10)
     for i in range(2, len(DATA)):
         # Data to be inserted
