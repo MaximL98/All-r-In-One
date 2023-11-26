@@ -8,6 +8,7 @@ sys.path.append(PATH_TO_SQLITE)
 from selectData import get_data
 from database import refresh_data, insert_theme
 from selectComments import get_comments
+from selectTheme import get_themes
 
 class Post:
     def __init__(self, title, content, subreddit, id):
@@ -106,7 +107,6 @@ class ForumApp:
 
             def hide_indicators():
                 home_indicate.config(bg='grey')
-                example_indicate.config(bg='grey')
 
             def indicate(lb, page):
                 hide_indicators()
@@ -117,23 +117,20 @@ class ForumApp:
             toggle_menu_frame = tk.Frame(root, bg='grey')
             
             # Just an example for later, will need to add 60 to y in placement for each new button
-            obj = Subreddits('News', ['worldnews'])
-            
-            for key, value in obj.__dict__.items():  
-                home_btn = tk.Button(toggle_menu_frame, text=obj.theme, font=('Bold', 15), bd=0, bg='grey', fg='white',
-                                    activebackground='grey', activeforeground='white', command=lambda:indicate(home_indicate, home_page))
-                home_btn.place(x=20, y=20)
+        
+            obj = get_themes()
+            y = 20
+            for key, value in obj.items():
+                print(f"key={key}/n value={value}")  
+                home_btn = tk.Button(toggle_menu_frame, text=key, font=('Bold', 15), bd=0, bg='grey', fg='white',
+                                    activebackground='grey', activeforeground='white', command=lambda: indicate(home_indicate, home_page))
+                home_btn.place(x=20, y=y)
 
                 home_indicate = tk.Label(toggle_menu_frame, text='', bg='grey')
-                home_indicate.place(x=3, y=20, width=5, height=40)
+                #home_indicate.place(x=3, y=y, width=5, height=40)
 
-            
-            example_btn = tk.Button(toggle_menu_frame, text='Home', font=('Bold', 15), bd=0, bg='grey', fg='white',
-                                  activebackground='grey', activeforeground='white', command=lambda:indicate(example_indicate))
-            example_btn.place(x=20, y=80)
+                y+=60
 
-            example_indicate = tk.Label(toggle_menu_frame, text='', bg='grey')
-            example_indicate.place(x=3, y=80, width=5, height=40)
 
             window_height = root.winfo_height()
             toggle_menu_frame.place(x=0, y=50, height=window_height, width=200)
