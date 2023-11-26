@@ -10,16 +10,16 @@ sys.stdin.reconfigure(encoding='utf-8')
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Function to get requests from reddit API
-def getRequests(HEADERS):
+def getRequests(HEADERS, subreddit):
     requests.get('https://oauth.reddit.com/api/v1/me', headers=HEADERS)
-    res = requests.get("https://oauth.reddit.com/r/worldnews/hot",
+    res = requests.get(f"https://oauth.reddit.com/r/{subreddit}/hot",
                    headers=HEADERS, params={'limit': '10', 'show': 'true'})
     return res
 
 # Function to get the data from the request into a data frame
-def getData():
+def getData(subreddit):
     df = pd.DataFrame()  # Initialize dataframe
-    for post in getRequests(HEADERS).json()['data']['children']:
+    for post in getRequests(HEADERS, subreddit).json()['data']['children']:
         # Append relevant data to dataframe
         new_row = pd.DataFrame({
             'subreddit': [post['data']['subreddit']],
@@ -40,9 +40,9 @@ def writeToTxt(df):
         f.write(df.to_string())
     df.to_csv('redditAPI/output.txt', sep='\t')
 
-writeToTxt(getData())
+#writeToTxt(getData())
 
-DATA = getData()
+DATA = getData('worldnews')
 
 
 """ # Create a VideoCapture object

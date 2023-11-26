@@ -14,13 +14,13 @@ def create_connection(path):
 
 conn = create_connection('sqlite/allR.db')
 
-def get_data():
+def get_data(theme):
     # Create a cursor object to execute SQL queries
     cursor = conn.cursor()
 
     # Select all data
     table_name = 'data'
-    select_all_query = f'SELECT * FROM {table_name};'
+    select_all_query = f'SELECT * FROM {table_name} WHERE theme = {theme};'
     cursor.execute(select_all_query)
 
     # Fetch all rows from the result set

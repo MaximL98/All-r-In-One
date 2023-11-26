@@ -89,13 +89,13 @@ class ForumApp:
                 toggle_btn.config(text='☰')
                 toggle_btn.config(command=toggle_menu)
 
-            def home_page():
+            def home_page(subreddit):
                 self.posts = []
 
                 self.scrollable_frame = ScrollableFrame(self.scrollable_frame, bg="#2E2E2E")
                 self.scrollable_frame.pack(fill="both", expand=True)
 
-                selected_data = get_data()
+                selected_data = get_data(subreddit)
                 for data in selected_data:
                     self.posts.append(Post(data[3], data[4], data[2], data[0]))
 
@@ -121,9 +121,9 @@ class ForumApp:
             obj = get_themes()
             y = 20
             for key, value in obj.items():
-                print(f"key={key}/n value={value}")  
+                print(f"key={key} value={value}")  
                 home_btn = tk.Button(toggle_menu_frame, text=key, font=('Bold', 15), bd=0, bg='grey', fg='white',
-                                    activebackground='grey', activeforeground='white', command=lambda: indicate(home_indicate, home_page))
+                                    activebackground='grey', activeforeground='white', command=lambda: indicate(home_indicate, home_page(value[0])))
                 home_btn.place(x=20, y=y)
 
                 home_indicate = tk.Label(toggle_menu_frame, text='', bg='grey')
@@ -165,7 +165,7 @@ class ForumApp:
         self.scrollable_frame = ScrollableFrame(root, bg="#2E2E2E")
         self.scrollable_frame.pack(pady=10, fill="both", expand=True)
 
-        selected_data = get_data()
+        selected_data = get_data('worldnews')
         for data in selected_data:
             self.posts.append(Post(data[3], data[4], data[2], data[0]))
 
@@ -252,7 +252,7 @@ class ForumApp:
         refresh_data()
         self.posts.clear()
         
-        selected_data = get_data()
+        selected_data = get_data('worldnews')
         for data in selected_data:
             self.posts.append(Post(data[3], data[4], data[2], data[0]))
 
