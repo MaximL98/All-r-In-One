@@ -165,11 +165,14 @@ class ForumApp:
         self.scrollable_frame = ScrollableFrame(root, bg="#2E2E2E")
         self.scrollable_frame.pack(pady=10, fill="both", expand=True)
 
-        selected_data = get_data('worldnews')
-        for data in selected_data:
-            self.posts.append(Post(data[3], data[4], data[2], data[0]))
-
-        self.add_post_buttons()
+        themes = get_themes()
+        if themes != None:
+            for key in themes.keys():
+                print(key)
+                selected_data = get_data(key)
+                for data in selected_data:
+                    self.posts.append(Post(data[3], data[4], data[2], data[0]))
+            self.add_post_buttons()
 
         # Bind the mouse wheel event to the main window
         root.bind("<MouseWheel>", self.on_mousewheel)
@@ -252,9 +255,14 @@ class ForumApp:
         refresh_data()
         self.posts.clear()
         
-        selected_data = get_data('worldnews')
-        for data in selected_data:
-            self.posts.append(Post(data[3], data[4], data[2], data[0]))
+        themes = get_themes()
+        if themes != None:
+            for key in themes.keys():
+                print(key)
+                selected_data = get_data(key)
+                for data in selected_data:
+                    self.posts.append(Post(data[3], data[4], data[2], data[0]))
+
 
         # Clear existing widgets in the scrollable frame
         for widget in self.scrollable_frame.scrollable_frame.winfo_children():

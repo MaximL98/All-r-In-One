@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 import sys
-from paths import PATH_TO_REDDIT_API
+from paths import PATH_TO_REDDIT_API, PATH_TO_SQLITE
 sys.path.append(PATH_TO_REDDIT_API)
 sys.path.append(PATH_TO_SQLITE)
 from redditConn import getData
@@ -34,6 +34,7 @@ def execute_query(connection, query, data=None):
     except Error as e:
         print(f"The error '{e}' occurred")
 
+
 def delete_rows(connection, table_name, start_row, end_row):
     delete_query = f'DELETE FROM {table_name} WHERE rowid BETWEEN {start_row} AND {end_row};'
     cursor = connection.cursor()
@@ -51,15 +52,19 @@ def refresh_data():
     VALUES (?, ?, ?, ?, ?);
     """
     #TODO HERE################
-    subreddit = get_themes
-    DATA = getData(subreddit)
-    ##########################
     
-    delete_rows(conn, 'data', 0, 10)
-    for i in range(2, len(DATA)):
-        # Data to be inserted
-        data = (DATA['name'][i][3:], 'Sample Theme', DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
-        execute_query(conn, insert_data_sql, data)
+    themes = get_themes()
+    if themes != None:
+        for key, values in themes.items():
+            print(values)
+            for value in values:
+                DATA = getData(value)
+    ##########################
+                #delete_rows(conn, 'data', 0, 10)
+                for i in range(2, len(DATA)):
+                    # Data to be inserted
+                    data = (DATA['name'][i][3:], key, DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
+                    execute_query(conn, insert_data_sql, data)
 
 def insert_comments(post_id, comment_limit):
     comments = get_comments(post_id, comment_limit)

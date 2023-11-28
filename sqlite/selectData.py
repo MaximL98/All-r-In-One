@@ -20,7 +20,7 @@ def get_data(theme):
 
     # Select all data
     table_name = 'data'
-    select_all_query = f'SELECT * FROM {table_name} WHERE theme = {theme};'
+    select_all_query = f"SELECT * FROM {table_name} WHERE theme = '{theme}';"
     cursor.execute(select_all_query)
 
     # Fetch all rows from the result set
