@@ -4,11 +4,39 @@ from tkinter import simpledialog
 from paths import PATH_TO_SQLITE
 import sys
 
+import urllib.request
+import io
+from PIL import ImageTk, Image
+
 sys.path.append(PATH_TO_SQLITE)
 from selectData import get_data
 from database import refresh_data, insert_theme
 from selectComments import get_comments
 from selectTheme import get_themes
+
+class WebImage:
+    def __init__(self, url, width=None, height=None):
+        with urllib.request.urlopen(url) as u:
+            raw_data = u.read()
+        image = Image.open(io.BytesIO(raw_data))
+
+        # Resize the image if width and/or height are specified
+        if width and height:
+            image = image.resize((width, height), Image.ANTIALIAS)
+        elif width:
+            w_percent = width / float(image.size[0])
+            h_size = int(float(image.size[1]) * float(w_percent))
+            image = image.resize((width, h_size), Image.ANTIALIAS)
+        elif height:
+            h_percent = height / float(image.size[1])
+            w_size = int(float(image.size[0]) * float(h_percent))
+            image = image.resize((w_size, height), Image.ANTIALIAS)
+
+        self.tk_image = ImageTk.PhotoImage(image)
+
+    def get(self):
+        return self.tk_image
+
 
 class Post:
     def __init__(self, title, content, subreddit, id):
@@ -205,13 +233,14 @@ class ForumApp:
     def add_post_buttons(self):
         for i, post in enumerate(self.posts):
             post_frame = tk.Frame(self.scrollable_frame.scrollable_frame, bg="#2E2E2E")
-            post_frame.pack(pady=5, padx=75)
+            post_frame.pack(pady=5, padx=75, fill='both')
 
-            post_text = tk.Text(post_frame, wrap="word", bg="#2E2E2E", fg="white", padx=4, pady=2)
 
-            post_text.tag_configure("title", font=("Helvetica", 14, "bold"), justify="center")
-            post_text.tag_configure("content", font=("Helvetica", 12))
-            post_text.tag_configure("subreddit", font=("Helvetica", 11))
+            post_text = tk.Text(post_frame, wrap="word", bg="#2E2E2E", fg="white", padx=4, pady=1)
+
+            post_text.tag_configure("title", font=("Helvetica", 14, "bold"), justify="center", spacing1=1, spacing2=1)
+            post_text.tag_configure("content", font=("Helvetica", 12), spacing1=0, spacing2=0)
+            post_text.tag_configure("subreddit", font=("Helvetica", 11), spacing1=0, spacing2=0)
 
             post_text.insert("1.0", f"r/{post.subreddit}", "subreddit")
             post_text.insert("1.0", f"{post.content}\n\n", "content")
@@ -220,6 +249,14 @@ class ForumApp:
             post_text.config(state=tk.DISABLED)  # Make the Text widget read-only
 
             post_text.pack(expand=True, fill="both")
+
+            # Display image if the content ends with "png" or "jpg"
+            if post.content.endswith(("png", "jpg")):
+                img = WebImage(url=post.content, width=500, height=500).get()
+                imagelab = tk.Label(post_frame, image=img)
+                imagelab.image = img  # Keep a reference to the image to prevent it from being garbage collected
+                imagelab.pack()
+
 
             button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
             button.pack(side="left")

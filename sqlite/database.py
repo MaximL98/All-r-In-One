@@ -35,8 +35,9 @@ def execute_query(connection, query, data=None):
         print(f"The error '{e}' occurred")
 
 
-def delete_rows(connection, table_name, start_row, end_row):
-    delete_query = f'DELETE FROM {table_name} WHERE rowid BETWEEN {start_row} AND {end_row};'
+def delete_rows(connection, table_name, column, start_row, end_row):
+    print(column)
+    delete_query = f"DELETE FROM {table_name} WHERE theme = '{column}';"
     cursor = connection.cursor()
     try:
         cursor.execute(delete_query)
@@ -51,16 +52,15 @@ def refresh_data():
     INSERT OR IGNORE INTO data (post_id, theme, subreddit, title, content)
     VALUES (?, ?, ?, ?, ?);
     """
-    #TODO HERE################
     
     themes = get_themes()
     if themes != None:
         for key, values in themes.items():
             print(values)
             for value in values:
+                print(value)
                 DATA = getData(value)
-    ##########################
-                #delete_rows(conn, 'data', 0, 10)
+                #delete_rows(conn, 'data', key,0, 20)
                 for i in range(2, len(DATA)):
                     # Data to be inserted
                     data = (DATA['name'][i][3:], key, DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
@@ -132,7 +132,6 @@ insert_data_sql = """
     INSERT OR IGNORE INTO data (theme, subreddit, title, content)
     VALUES (?, ?, ?, ?);
 """
-
 
 # Close Connection
 conn.close()

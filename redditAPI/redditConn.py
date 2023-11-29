@@ -42,7 +42,7 @@ def writeToTxt(df):
 
 #writeToTxt(getData())
 
-DATA = getData('worldnews')
+#DATA = getData('worldnews')
 
 
 """ # Create a VideoCapture object
