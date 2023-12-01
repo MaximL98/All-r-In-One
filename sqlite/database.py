@@ -35,9 +35,11 @@ def execute_query(connection, query, data=None):
         print(f"The error '{e}' occurred")
 
 
-def delete_rows(connection, table_name, column, start_row, end_row):
+def delete_rows(connection, table_name, column_name ,column, start_row, end_row):
     print(column)
-    delete_query = f"DELETE FROM {table_name} WHERE theme = '{column}';"
+    if column == 'ALL':
+        delete_query = f"DELETE FROM {table_name}"
+    delete_query = f"DELETE FROM {table_name} WHERE {column_name} = '{column}';"
     cursor = connection.cursor()
     try:
         cursor.execute(delete_query)
@@ -73,7 +75,7 @@ def insert_comments(post_id, comment_limit):
     INSERT OR IGNORE INTO comments (post_id, content)
     VALUES (?, ?);
     """
-    delete_rows(conn, 'comments', 0, comment_limit)
+    delete_rows(conn, 'comments', 'content', 'ALL', 0, comment_limit)
     for comment in comments:
         # Data to be inserted
         data = (post_id, comment)
