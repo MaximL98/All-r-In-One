@@ -5,6 +5,7 @@ from paths import PATH_TO_SQLITE
 import sys
 
 import urllib.request
+from urllib.error import HTTPError
 import io
 from PIL import ImageTk, Image
 
@@ -22,15 +23,15 @@ class WebImage:
 
         # Resize the image if width and/or height are specified
         if width and height:
-            image = image.resize((width, height), Image.ANTIALIAS)
+            image = image.resize((width, height), Image.LANCZOS)
         elif width:
             w_percent = width / float(image.size[0])
             h_size = int(float(image.size[1]) * float(w_percent))
-            image = image.resize((width, h_size), Image.ANTIALIAS)
+            image = image.resize((width, h_size), Image.LANCZOS)
         elif height:
             h_percent = height / float(image.size[1])
             w_size = int(float(image.size[0]) * float(h_percent))
-            image = image.resize((w_size, height), Image.ANTIALIAS)
+            image = image.resize((w_size, height), Image.LANCZOS)
 
         self.tk_image = ImageTk.PhotoImage(image)
 
@@ -82,33 +83,26 @@ class ForumApp:
         style = ttk.Style()
         style.theme_use("clam")  # Use the clam theme as a base
 
-        root.configure(bg="#2E2E2E")  # Set the background color
+        root.configure(bg="#1c1c1c")  # Set the background color
 
         style.configure("TButton",
                         font=("Helvetica", 10),  # Set the font size for buttons
                         padding=(5, 5),  # Set padding for buttons
                         relief="flat",
-                        background="#4CAF50",  # Default background color for buttons
+                        background="#2b0945",  # Default background color for buttons
                         foreground="white",  # Default text color for buttons
-                        hoverbackground="#45a049",  # Background color for buttons on hover
+                        hoverbackground="#4c246b",  # Background color for buttons on hover
                         )
 
         style.map("TButton",
-                  background=[("active", "#45a049")]  # Background color for buttons when clicked
+                  background=[("active", "#4c246b")]  # Background color for buttons when clicked
                   )
 
         style.configure("TLabel",
                         font=("Helvetica", 12),  # Set the font size for labels
-                        background="#2E2E2E",  # Dark background color for labels
+                        background="#1c1c1c",  # Dark background color for labels
                         foreground="white")  # White text for labels
 
-        style.configure("Red.TButton",
-                background="red",  # Change background color to red
-                hoverbackground="#CC0000"  # Hover background color for red
-                )
-        style.map("Red.TButton",
-                  background=[("active", "#CC0000")]  # Background color for buttons when clicked
-                  )
 
         def toggle_menu():
 
@@ -136,7 +130,7 @@ class ForumApp:
                     frame.destroy()
 
             def hide_indicators():
-                home_indicate.config(bg='grey')
+                home_indicate.config(bg='#2b0945')
 
             def indicate(lb, page, theme):
                 print(theme)
@@ -146,7 +140,7 @@ class ForumApp:
                 home_page(theme)
                 page()
 
-            toggle_menu_frame = tk.Frame(root, bg='grey')
+            toggle_menu_frame = tk.Frame(root, bg='#2b0945')
             
             # Just an example for later, will need to add 60 to y in placement for each new button
         
@@ -154,11 +148,11 @@ class ForumApp:
             y = 20
             for key, value in obj.items():
                 print(f"key={key} value={value}")  
-                home_btn = tk.Button(toggle_menu_frame, text=key, font=('Bold', 15), bd=0, bg='grey', fg='white',
-                                    activebackground='grey', activeforeground='white', command=lambda key=key: indicate(home_indicate, home_btn, key))
+                home_btn = tk.Button(toggle_menu_frame, text=key, font=('Bold', 15), bd=0, bg='#2b0945', fg='white',
+                                    activebackground='#2b0945', activeforeground='white', command=lambda key=key: indicate(home_indicate, home_btn, key))
                 home_btn.place(x=20, y=y)
 
-                home_indicate = tk.Label(toggle_menu_frame, text='', bg='grey')
+                home_indicate = tk.Label(toggle_menu_frame, text='', bg='#2b0945')
                 #home_indicate.place(x=3, y=y, width=5, height=40)
 
                 y+=60
@@ -174,10 +168,10 @@ class ForumApp:
         
 
 
-        head_frame = tk.Frame(root, bg='grey', highlightbackground='white', highlightthickness=1)
+        head_frame = tk.Frame(root, bg='#2b0945', highlightbackground='white', highlightthickness=1)
 
-        toggle_btn = tk.Button(head_frame, text='☰', bg='grey', fg='white', font=('Bold', 20),
-                                bd=0,activebackground='grey', activeforeground='white', command=toggle_menu)
+        toggle_btn = tk.Button(head_frame, text='☰', bg='#2b0945', fg='white', font=('Bold', 20),
+                                bd=0,activebackground='#2b0945', activeforeground='white', command=toggle_menu)
  
         toggle_btn.pack(side=tk.LEFT, anchor=tk.W)
 
@@ -232,34 +226,47 @@ class ForumApp:
 
     def add_post_buttons(self):
         for i, post in enumerate(self.posts):
-            post_frame = tk.Frame(self.scrollable_frame.scrollable_frame, bg="#2E2E2E")
+            post_frame = tk.Frame(self.scrollable_frame.scrollable_frame, bg="#1c1c1c")
             post_frame.pack(pady=5, padx=75, fill='both')
 
+            post_text = tk.Text(post_frame, wrap="word", bg="#1c1c1c", fg="white", padx=4, pady=1)
 
-            post_text = tk.Text(post_frame, wrap="word", bg="#2E2E2E", fg="white", padx=4, pady=1)
-
-            post_text.tag_configure("title", font=("Helvetica", 14, "bold"), justify="center", spacing1=1, spacing2=1)
-            post_text.tag_configure("content", font=("Helvetica", 12), spacing1=0, spacing2=0)
-            post_text.tag_configure("subreddit", font=("Helvetica", 11), spacing1=0, spacing2=0)
+            post_text.tag_configure("title", font=("Helvetica", 16, "bold"), justify="center")
+            post_text.tag_configure("content", font=("Helvetica", 12))
+            post_text.tag_configure("subreddit", font=("Helvetica", 11))
 
             post_text.insert("1.0", f"r/{post.subreddit}", "subreddit")
+
+
             post_text.insert("1.0", f"{post.content}\n\n", "content")
+
+            
             post_text.insert("1.0", f"{post.title}\n\n", "title")
             
             post_text.config(state=tk.DISABLED)  # Make the Text widget read-only
 
-            post_text.pack(expand=True, fill="both")
+            post_text.grid(row=0, column=0, sticky="nsew")
 
             # Display image if the content ends with "png" or "jpg"
-            if post.content.endswith(("png", "jpg")):
-                img = WebImage(url=post.content, width=500, height=500).get()
-                imagelab = tk.Label(post_frame, image=img)
-                imagelab.image = img  # Keep a reference to the image to prevent it from being garbage collected
-                imagelab.pack()
+            if post.content.endswith(("png", "jpg", "jpeg")):
+                try:
+                    post_text.config(height=10)
+                    img = WebImage(url=post.content, width=640, height=640).get()
+                    imagelab = tk.Label(post_frame, image=img)
+                    imagelab.image = img  # Keep a reference to the image to prevent it from being garbage collected
+                    imagelab.grid(row=1, column=0, sticky="nsew")
+                except HTTPError as e:
+                    if e.code == 404:
+                        print("Image not found. It may have been deleted.")
+                        # Handle the situation accordingly, e.g., provide a default image or log the event
+                    else:
+                        print(f"HTTP Error {e.code}: {e.reason}")
+                        # Handle other HTTP errors as needed
 
-
+            
             button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
-            button.pack(side="left")
+            button.grid(row=2, column=0, sticky="w")
+
 
             # Set cursor on hover
             button.bind("<Enter>", lambda event, button=button: button.configure(cursor="hand2"))
@@ -270,7 +277,7 @@ class ForumApp:
         comment_window.title(f"Comments for {post.title}")
 
         comment_list = tk.Text(
-            comment_window, wrap="word", width=50, height=10, bg="#2E2E2E", fg="white", padx=4, pady=2
+            comment_window, wrap="word", width=50, height=10, bg="#1c1c1c", fg="white", padx=4, pady=2
         )
         comment_list.pack(pady=10)
 
