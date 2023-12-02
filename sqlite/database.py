@@ -43,27 +43,28 @@ def delete_rows(connection, table_name, column_name , column, start_row, end_row
     try:
         cursor.execute(delete_query)
         connection.commit()
-        print(f"Rows {start_row} to {end_row} deleted successfully")
+        print(f"Rows {start_row} to {end_row} deleted successfully from {column}")
     except sqlite3.Error as e:
         print(f"The error '{e}' occurred")
 
-def refresh_data():
+def refresh_data(theme):
     conn = create_connection('sqlite/allR.db')
     insert_data_sql = """
     INSERT OR IGNORE INTO data (post_id, theme, subreddit, title, content)
     VALUES (?, ?, ?, ?, ?);
     """
-    
+    print(f"Refreshing for {theme}")
     themes = get_themes()
     if themes != None:
         for key, values in themes.items():
-            for value in values:
-                DATA = getData(value)
-                delete_rows(conn, 'data', 'theme', key, 0, 10)
-                for i in range(2, len(DATA)):
-                    # Data to be inserted
-                    data = (DATA['name'][i][3:], key, DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
-                    execute_query(conn, insert_data_sql, data)
+            if key == theme:
+                for value in values:
+                    DATA = getData(value)
+                    delete_rows(conn, 'data', 'theme', key, 0, 10)
+                    for i in range(2, len(DATA)):
+                        # Data to be inserted
+                        data = (DATA['name'][i][3:], key, DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
+                        execute_query(conn, insert_data_sql, data)
 
 def insert_comments(post_id, comment_limit):
     comments = get_comments(post_id, comment_limit)

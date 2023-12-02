@@ -15,6 +15,7 @@ from database import refresh_data, insert_theme
 from selectComments import get_comments
 from selectTheme import get_themes
 
+
 class WebImage:
     def __init__(self, url, width=None, height=None):
         with urllib.request.urlopen(url) as u:
@@ -103,6 +104,8 @@ class ForumApp:
                         background="#1c1c1c",  # Dark background color for labels
                         foreground="white")  # White text for labels
 
+        global THEME
+        THEME = 'News'
 
         def toggle_menu():
 
@@ -124,7 +127,7 @@ class ForumApp:
                 # Change the title_label text
                 page_title = theme
                 app.title_label.config(text=f'/r ALL {page_title}')
-
+                THEME = theme
 
                 self.add_post_buttons()
 
@@ -136,12 +139,14 @@ class ForumApp:
                 home_indicate.config(bg='#2b0945')
 
             def indicate(lb, page, theme):
-                print(theme)
+                global THEME
+                THEME = theme
+                print(f"The THEME is {THEME} in indicate")
                 hide_indicators()
                 lb.config(bg='white')
                 delete_pages()
                 home_page(theme)
-                page()
+                #page()
 
             toggle_menu_frame = tk.Frame(root, bg='#2b0945')
             
@@ -207,7 +212,7 @@ class ForumApp:
         root.bind("<MouseWheel>", self.on_mousewheel)
 
         # Refresh button
-        refresh_button = ttk.Button(root, text="Refresh", command=self.refresh_posts)
+        refresh_button = ttk.Button(root, text="Refresh", command= self.refresh_posts)
         refresh_button.pack(side="right", anchor="e", padx=10, pady=10)
 
         # Add theme button
@@ -299,17 +304,17 @@ class ForumApp:
         self.scrollable_frame.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def refresh_posts(self):
+        global THEME
         # Add logic here to refresh or update the posts
         print("Refreshing posts...")
-
+        print(f"The THEME is {THEME} in refreshing")
         # For demonstration purposes, you can clear the existing posts and add new ones
-        refresh_data()
+        refresh_data(THEME)
         self.posts.clear()
         
         themes = get_themes()
         if themes != None:
             for key in themes.keys():
-                print(key)
                 selected_data = get_data(key)
                 for data in selected_data:
                     self.posts.append(Post(data[3], data[4], data[2], data[0]))
