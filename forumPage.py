@@ -121,7 +121,10 @@ class ForumApp:
                 for data in selected_data:
                     self.posts.append(Post(data[3], data[4], data[2], data[0]))
 
-                
+                # Change the title_label text
+                page_title = theme
+                app.title_label.config(text=f'/r ALL {page_title}')
+
 
                 self.add_post_buttons()
 
@@ -184,8 +187,8 @@ class ForumApp:
 
 
         self.posts = []
-
-        self.title_label = ttk.Label(root, text="Forum Posts", font=("Helvetica", 16), style="TLabel")
+        page_title = '/r ALL'
+        self.title_label = ttk.Label(root, text=page_title, font=("Helvetica", 18, "bold"), style="TLabel")
         self.title_label.pack(pady=10)
 
         self.scrollable_frame = ScrollableFrame(root, bg="#2E2E2E")
