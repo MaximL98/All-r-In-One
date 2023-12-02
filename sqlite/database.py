@@ -58,9 +58,11 @@ def refresh_data(theme):
     if themes != None:
         for key, values in themes.items():
             if key == theme:
+                print("Key is theme")
                 for value in values:
+                    print(f"The values is {value}")
                     DATA = getData(value)
-                    delete_rows(conn, 'data', 'theme', key, 0, 10)
+                    delete_rows(conn, 'data', 'subreddit', value, 0, 10)
                     for i in range(2, len(DATA)):
                         # Data to be inserted
                         data = (DATA['name'][i][3:], key, DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
