@@ -41,11 +41,12 @@ class WebImage:
 
 
 class Post:
-    def __init__(self, title, content, subreddit, id):
+    def __init__(self, title, content, subreddit, id, theme):
         self.id = id
         self.title = title
         self.content = content
         self.subreddit = subreddit
+        self.theme = theme
         self.comments = []
 
 
@@ -122,7 +123,7 @@ class ForumApp:
 
                 selected_data = get_data(theme)
                 for data in selected_data:
-                    self.posts.append(Post(data[3], data[4], data[2], data[0]))
+                    self.posts.append(Post(data[3], data[4], data[2], data[0], theme))
 
                 # Change the title_label text
                 page_title = theme
@@ -205,7 +206,7 @@ class ForumApp:
                 print(key)
                 selected_data = get_data(key)
                 for data in selected_data:
-                    self.posts.append(Post(data[3], data[4], data[2], data[0]))
+                    self.posts.append(Post(data[3], data[4], data[2], data[0], key))
             self.add_post_buttons()
 
         # Bind the mouse wheel event to the main window
@@ -233,52 +234,54 @@ class ForumApp:
         
 
     def add_post_buttons(self):
+        global THEME
         for i, post in enumerate(self.posts):
-            post_frame = tk.Frame(self.scrollable_frame.scrollable_frame, bg="#1c1c1c")
-            post_frame.pack(pady=5, padx=75, fill='both')
+            if post.theme == THEME:
+                post_frame = tk.Frame(self.scrollable_frame.scrollable_frame, bg="#1c1c1c")
+                post_frame.pack(pady=5, padx=75, fill='both')
 
-            post_text = tk.Text(post_frame, wrap="word", bg="#1c1c1c", fg="white", padx=4, pady=1)
+                post_text = tk.Text(post_frame, wrap="word", bg="#1c1c1c", fg="white", padx=4, pady=1)
 
-            post_text.tag_configure("title", font=("Helvetica", 16, "bold"), justify="center")
-            post_text.tag_configure("content", font=("Helvetica", 12))
-            post_text.tag_configure("subreddit", font=("Helvetica", 11))
+                post_text.tag_configure("title", font=("Helvetica", 16, "bold"), justify="center")
+                post_text.tag_configure("content", font=("Helvetica", 12))
+                post_text.tag_configure("subreddit", font=("Helvetica", 11))
 
-            post_text.insert("1.0", f"r/{post.subreddit}", "subreddit")
+                post_text.insert("1.0", f"r/{post.subreddit}", "subreddit")
 
 
-            post_text.insert("1.0", f"{post.content}\n\n", "content")
+                post_text.insert("1.0", f"{post.content}\n\n", "content")
+
+                
+                post_text.insert("1.0", f"{post.title}\n\n", "title")
+                
+                post_text.config(state=tk.DISABLED)  # Make the Text widget read-only
+
+                post_text.grid(row=0, column=0, sticky="nsew")
+
+                # Display image if the content ends with "png" or "jpg"
+                if post.content.endswith(("png", "jpg", "jpeg")):
+                    try:
+                        post_text.config(height=10)
+                        img = WebImage(url=post.content, width=640, height=640).get()
+                        imagelab = tk.Label(post_frame, image=img)
+                        imagelab.image = img  # Keep a reference to the image to prevent it from being garbage collected
+                        imagelab.grid(row=1, column=0, sticky="nsew")
+                    except HTTPError as e:
+                        if e.code == 404:
+                            print("Image not found. It may have been deleted.")
+                            # Handle the situation accordingly, e.g., provide a default image or log the event
+                        else:
+                            print(f"HTTP Error {e.code}: {e.reason}")
+                            # Handle other HTTP errors as needed
 
             
-            post_text.insert("1.0", f"{post.title}\n\n", "title")
-            
-            post_text.config(state=tk.DISABLED)  # Make the Text widget read-only
-
-            post_text.grid(row=0, column=0, sticky="nsew")
-
-            # Display image if the content ends with "png" or "jpg"
-            if post.content.endswith(("png", "jpg", "jpeg")):
-                try:
-                    post_text.config(height=10)
-                    img = WebImage(url=post.content, width=640, height=640).get()
-                    imagelab = tk.Label(post_frame, image=img)
-                    imagelab.image = img  # Keep a reference to the image to prevent it from being garbage collected
-                    imagelab.grid(row=1, column=0, sticky="nsew")
-                except HTTPError as e:
-                    if e.code == 404:
-                        print("Image not found. It may have been deleted.")
-                        # Handle the situation accordingly, e.g., provide a default image or log the event
-                    else:
-                        print(f"HTTP Error {e.code}: {e.reason}")
-                        # Handle other HTTP errors as needed
-
-            
-            button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
-            button.grid(row=2, column=0, sticky="w")
+                button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
+                button.grid(row=2, column=0, sticky="w")
 
 
-            # Set cursor on hover
-            button.bind("<Enter>", lambda event, button=button: button.configure(cursor="hand2"))
-            button.bind("<Leave>", lambda event, button=button: button.configure(cursor=""))
+                # Set cursor on hover
+                button.bind("<Enter>", lambda event, button=button: button.configure(cursor="hand2"))
+                button.bind("<Leave>", lambda event, button=button: button.configure(cursor=""))
 
     def view_comments(self, post):
         comment_window = tk.Toplevel(self.root)
@@ -307,7 +310,6 @@ class ForumApp:
         global THEME
         # Add logic here to refresh or update the posts
         print("Refreshing posts...")
-        print(f"The THEME is {THEME} in refreshing")
         # For demonstration purposes, you can clear the existing posts and add new ones
         refresh_data(THEME)
         self.posts.clear()
@@ -317,7 +319,7 @@ class ForumApp:
             for key in themes.keys():
                 selected_data = get_data(key)
                 for data in selected_data:
-                    self.posts.append(Post(data[3], data[4], data[2], data[0]))
+                    self.posts.append(Post(data[3], data[4], data[2], data[0], key))
 
 
         # Clear existing widgets in the scrollable frame
