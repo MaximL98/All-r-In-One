@@ -30,13 +30,12 @@ def execute_query(connection, query, data=None):
         else:
             cursor.execute(query)
         connection.commit()
-        print("Query executed successfully")
+        #print("Query executed successfully")
     except Error as e:
         print(f"The error '{e}' occurred")
 
 
-def delete_rows(connection, table_name, column_name ,column, start_row, end_row):
-    print(column)
+def delete_rows(connection, table_name, column_name , column, start_row, end_row):
     if column == 'ALL':
         delete_query = f"DELETE FROM {table_name}"
     delete_query = f"DELETE FROM {table_name} WHERE {column_name} = '{column}';"
@@ -58,11 +57,9 @@ def refresh_data():
     themes = get_themes()
     if themes != None:
         for key, values in themes.items():
-            print(values)
             for value in values:
-                print(value)
                 DATA = getData(value)
-                #delete_rows(conn, 'data', key,0, 20)
+                delete_rows(conn, 'data', 'theme', key, 0, 10)
                 for i in range(2, len(DATA)):
                     # Data to be inserted
                     data = (DATA['name'][i][3:], key, DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
@@ -88,7 +85,6 @@ def insert_theme(theme, subreddits):
     VALUES (?, ?);
     """
     for subreddit in subreddits:
-        print(subreddit)
         # Data to be inserted
         data = (theme, subreddit)
         execute_query(conn, insert_data_sql, data)
