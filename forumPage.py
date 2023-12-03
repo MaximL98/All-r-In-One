@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
+from ttkthemes import ThemedTk
 from paths import PATH_TO_SQLITE
 import sys
 
@@ -15,6 +16,11 @@ from database import refresh_data, insert_theme
 from selectComments import get_comments
 from selectTheme import get_themes
 
+import webbrowser 
+
+def callback(url):
+    # Open website 
+    webbrowser.open(url) 
 
 class WebImage:
     def __init__(self, url, width=None, height=None):
@@ -75,6 +81,7 @@ class Subreddits:
         self.subreddits = subreddits
 
 
+          
 class ForumApp:
     def __init__(self, root):
         self.root = root
@@ -242,10 +249,19 @@ class ForumApp:
 
                 post_text = tk.Text(post_frame, wrap="word", bg="#1c1c1c", fg="white", padx=4, pady=1)
 
+                if post.theme == "News":
+                    post_text.tag_bind("content", "<Button-1>", lambda event, url=post.content: callback(url))
+                    post_text.tag_configure("content", foreground="#5dade2", underline=True, font=("Helvetica", 12))
+                    post_text.tag_bind("content", "<Enter>", lambda event: post_text.config(cursor="hand2"))
+                    post_text.tag_bind("content", "<Leave>", lambda event: post_text.config(cursor=""))
+                else:
+                    post_text.tag_configure("content", font=("Helvetica", 12))
+
+
                 post_text.tag_configure("title", font=("Helvetica", 16, "bold"), justify="center")
-                post_text.tag_configure("content", font=("Helvetica", 12))
                 post_text.tag_configure("subreddit", font=("Helvetica", 11))
 
+                
                 post_text.insert("1.0", f"r/{post.subreddit}", "subreddit")
 
 
@@ -253,6 +269,8 @@ class ForumApp:
 
                 
                 post_text.insert("1.0", f"{post.title}\n\n", "title")
+
+                
                 
                 post_text.config(state=tk.DISABLED)  # Make the Text widget read-only
 
@@ -331,8 +349,10 @@ class ForumApp:
 
     
 
-
+# Example usage with different themes
+themes = ['arc', 'black', 'blue', 'clearlooks', 'elegance', 'equilux', 'itft1', 'keramik', 'kroc', 'plastik',
+          'radiance', 'scidthemes', 'smog', 'ubuntu', 'winxpblue', 'winnative']
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = ThemedTk(theme="black")
     app = ForumApp(root)
     root.mainloop()
