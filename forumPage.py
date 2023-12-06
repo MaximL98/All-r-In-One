@@ -149,7 +149,6 @@ class ForumApp:
             def indicate(lb, page, theme):
                 global THEME
                 THEME = theme
-                print(f"The THEME is {THEME} in indicate")
                 hide_indicators()
                 lb.config(bg='white')
                 delete_pages()
@@ -163,7 +162,6 @@ class ForumApp:
             obj = get_themes()
             y = 20
             for key, value in obj.items():
-                print(f"key={key} value={value}")  
                 home_btn = tk.Button(toggle_menu_frame, text=key, font=('Bold', 15), bd=0, bg='#2b0945', fg='white',
                                     activebackground='#2b0945', activeforeground='white', command=lambda key=key: indicate(home_indicate, home_btn, key))
                 home_btn.place(x=20, y=y)
@@ -210,7 +208,6 @@ class ForumApp:
         themes = get_themes()
         if themes != None:
             for key in themes.keys():
-                print(key)
                 selected_data = get_data(key)
                 for data in selected_data:
                     self.posts.append(Post(data[3], data[4], data[2], data[0], key))
