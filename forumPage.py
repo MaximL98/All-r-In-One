@@ -21,6 +21,7 @@ import webbrowser
 def callback(url):
     # Open website 
     webbrowser.open(url) 
+    
 
 class WebImage:
     def __init__(self, url, width=None, height=None):
@@ -79,6 +80,8 @@ class Subreddits:
     def __init__(self, theme, subreddits):
         self.theme = theme
         self.subreddits = subreddits
+
+
 
 
           
@@ -155,6 +158,59 @@ class ForumApp:
                 home_page(theme)
                 #page()
 
+            def edit_themes():
+                def add_subreddits():
+                    subreddits = simpledialog.askstring("Add Subreddits", "Enter Subreddits (comma-separated):")
+
+                    # Check if the user clicked Cancel
+                    if subreddits is not None:
+                        print(f"Theme: {theme}, Subreddits: {subreddits}")
+                        temp = subreddits.split(',')
+                        subreddit_list = [x.strip(' ') for x in temp]
+                        insert_theme(theme, subreddit_list)
+                    else:
+                        print("User canceled the input.")
+                       
+
+                def remove_subreddits():
+                    global flag
+                    flag = 1
+
+                def remove_theme():
+                    global flag
+                    flag = 1
+
+
+                theme = simpledialog.askstring("Edit Theme", "Which Theme You Want To Edit?")
+
+                if theme is not None:
+                    box = tk.Toplevel(root)
+
+                    btn1 = tk.Button(box, text="Add Subreddits", command=add_subreddits)
+                    btn1.pack(side="left", padx=5)
+
+                    btn2 = tk.Button(box, text="Remove Subreddits", command=remove_subreddits)
+                    btn2.pack(side="left", padx=5)
+
+                    btn3 = tk.Button(box, text="Remove Theme", command=remove_theme)
+                    btn3.pack(side="left", padx=5)
+
+                    close_button = tk.Button(box, text="Close", command=box.destroy)
+                    close_button.pack(pady=10)
+                    
+                    
+
+                if flag == 1:
+                    subreddits = simpledialog.askstring("Edit Theme", "Enter Subreddits (comma-separated):")
+
+                    # Check if the user clicked Cancel
+                    if theme is not None and subreddits is not None:
+                        print(f"Theme: {theme}, Subreddits: {subreddits}")
+
+                    else:
+                        print("User canceled the input.")
+                
+
             toggle_menu_frame = tk.Frame(root, bg='#2b0945')
             
             # Just an example for later, will need to add 60 to y in placement for each new button
@@ -173,6 +229,13 @@ class ForumApp:
 
 
             window_height = root.winfo_height()
+
+            edit_btn = tk.Button(toggle_menu_frame, text="Edit Themes", font=('Bold', 12), bd=0, bg='#2b0945', fg='white',
+                                    activebackground='#2b0945', activeforeground='white', command=edit_themes)
+            print(f"window_height = {window_height}")
+            edit_btn.place(x=20, y=window_height-100)
+
+
             toggle_menu_frame.place(x=0, y=50, height=window_height, width=200)
 
             toggle_btn.config(text='X')
@@ -180,8 +243,6 @@ class ForumApp:
 
 
         
-
-
         head_frame = tk.Frame(root, bg='#2b0945', highlightbackground='white', highlightthickness=1)
 
         toggle_btn = tk.Button(head_frame, text='☰', bg='#2b0945', fg='white', font=('Bold', 20),

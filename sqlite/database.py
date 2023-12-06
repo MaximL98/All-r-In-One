@@ -35,15 +35,16 @@ def execute_query(connection, query, data=None):
         print(f"The error '{e}' occurred")
 
 
-def delete_rows(connection, table_name, column_name , column, start_row, end_row):
+def delete_rows(connection, table_name, column_name , column):
     if column == 'ALL':
         delete_query = f"DELETE FROM {table_name}"
+    print(f"DELETE FROM {table_name} WHERE {column_name} = '{column}';")
     delete_query = f"DELETE FROM {table_name} WHERE {column_name} = '{column}';"
     cursor = connection.cursor()
     try:
         cursor.execute(delete_query)
         connection.commit()
-        print(f"Rows {start_row} to {end_row} deleted successfully from {column}")
+        print(f"Deleted successfully from {column}")
     except sqlite3.Error as e:
         print(f"The error '{e}' occurred")
 
@@ -62,7 +63,7 @@ def refresh_data(theme):
                 for value in values:
                     print(f"The values is {value}")
                     DATA = getData(value)
-                    delete_rows(conn, 'data', 'subreddit', value, 0, 10)
+                    delete_rows(conn, 'data', 'subreddit', value)
                     for i in range(2, len(DATA)):
                         # Data to be inserted
                         data = (DATA['name'][i][3:], key, DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
@@ -75,7 +76,7 @@ def insert_comments(post_id, comment_limit):
     INSERT OR IGNORE INTO comments (post_id, content)
     VALUES (?, ?);
     """
-    delete_rows(conn, 'comments', 'content', 'ALL', 0, comment_limit)
+    delete_rows(conn, 'comments', 'content', 'ALL')
     for comment in comments:
         # Data to be inserted
         data = (post_id, comment)
