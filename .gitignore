@@ -26,3 +26,4 @@ redditAPI/__pycache__/redditInfo.cpython-311.pyc
 sqlite/__pycache__/database.cpython-311.pyc
 sqlite/allR.db
 sqlite/allR.db
+sqlite/random_1.py
