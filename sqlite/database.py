@@ -38,7 +38,6 @@ def execute_query(connection, query, data=None):
 def delete_rows(connection, table_name, column_name , column):
     if column == 'ALL':
         delete_query = f"DELETE FROM {table_name}"
-    print(f"DELETE FROM {table_name} WHERE {column_name} = '{column}';")
     delete_query = f"DELETE FROM {table_name} WHERE {column_name} = '{column}';"
     cursor = connection.cursor()
     try:
@@ -54,14 +53,11 @@ def refresh_data(theme):
     INSERT OR IGNORE INTO data (post_id, theme, subreddit, title, content)
     VALUES (?, ?, ?, ?, ?);
     """
-    print(f"Refreshing for {theme}")
     themes = get_themes()
     if themes != None:
         for key, values in themes.items():
             if key == theme:
-                print("Key is theme")
                 for value in values:
-                    print(f"The values is {value}")
                     DATA = getData(value)
                     delete_rows(conn, 'data', 'subreddit', value)
                     for i in range(2, len(DATA)):
@@ -93,14 +89,15 @@ def insert_theme(theme, subreddits):
         data = (theme, subreddit)
         execute_query(conn, insert_data_sql, data)
 
-def remove_subreddit(theme, subreddit):
+def remove_subreddit(theme, subreddits):
     conn = create_connection('sqlite/allR.db')
     tables = ['themeSubs', 'data']
     for table in tables:
-        remove_data_sql = f"""
-        DELETE FROM {table} WHERE subreddit = '{subreddit}' AND theme = '{theme}';
-        """
-        execute_query(conn, remove_data_sql)
+        for subreddit in subreddits:
+            remove_data_sql = f"""
+            DELETE FROM {table} WHERE subreddit = '{subreddit}' AND theme = '{theme}';
+            """
+            execute_query(conn, remove_data_sql)
         
 def remove_themes(theme):
     conn = create_connection('sqlite/allR.db')

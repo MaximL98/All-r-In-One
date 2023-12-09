@@ -163,7 +163,6 @@ class ForumApp:
                     subreddits = simpledialog.askstring("Add Subreddits", "Enter Subreddits (comma-separated):")
 
                     if subreddits is not None:
-                        print(f"Theme: {theme}, Subreddits: {subreddits}")
                         temp = subreddits.split(',')
                         subreddit_list = [x.strip(' ') for x in temp]
                         insert_theme(theme, subreddit_list)
@@ -173,11 +172,10 @@ class ForumApp:
 
                 def remove_subreddits():
                     subreddits = simpledialog.askstring("Add Subreddits", "Enter Subreddits (comma-separated):")
-
                     if subreddits is not None:
                         temp = subreddits.split(',')
                         subreddit_list = [x.strip(' ') for x in temp]
-                        remove_subreddit(theme, subreddits)
+                        remove_subreddit(theme, subreddit_list)
                     else:
                         print("User canceled the input.")
 
@@ -237,7 +235,7 @@ class ForumApp:
 
             edit_btn = tk.Button(toggle_menu_frame, text="Edit Themes", font=('Bold', 12), bd=0, bg='#2b0945', fg='white',
                                     activebackground='#2b0945', activeforeground='white', command=edit_themes)
-            print(f"window_height = {window_height}")
+
             edit_btn.place(x=20, y=window_height-100)
 
 
@@ -296,7 +294,6 @@ class ForumApp:
 
         # Check if the user clicked Cancel
         if theme is not None and subreddits is not None:
-            print(f"Theme: {theme}, Subreddits: {subreddits}")
             temp = subreddits.split(',')
             subreddit_list = [x.strip(' ') for x in temp]
             insert_theme(theme, subreddit_list)
