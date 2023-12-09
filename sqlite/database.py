@@ -85,13 +85,31 @@ def insert_comments(post_id, comment_limit):
 def insert_theme(theme, subreddits):
     conn = create_connection('sqlite/allR.db')
     insert_data_sql = """
-    INSERT OR IGNORE INTO themeSubs (theme, subreddits)
+    INSERT OR IGNORE INTO themeSubs (theme, subreddit)
     VALUES (?, ?);
     """
     for subreddit in subreddits:
         # Data to be inserted
         data = (theme, subreddit)
         execute_query(conn, insert_data_sql, data)
+
+def remove_subreddit(theme, subreddit):
+    conn = create_connection('sqlite/allR.db')
+    tables = ['themeSubs', 'data']
+    for table in tables:
+        remove_data_sql = f"""
+        DELETE FROM {table} WHERE subreddit = '{subreddit}' AND theme = '{theme}';
+        """
+        execute_query(conn, remove_data_sql)
+        
+def remove_themes(theme):
+    conn = create_connection('sqlite/allR.db')
+    tables = ['themeSubs', 'data']
+    for table in tables:
+        remove_data_sql = f"""
+        DELETE FROM {table} WHERE theme = '{theme}';
+        """
+        execute_query(conn, remove_data_sql)
 
 # SQL command to drop the table
 '''table_name = 'themeSubs'

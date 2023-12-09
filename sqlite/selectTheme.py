@@ -20,7 +20,7 @@ def get_themes():
 
     # Select all data
     table_name = 'themeSubs'
-    select_all_query = f'SELECT theme, subreddits FROM {table_name};'
+    select_all_query = f'SELECT theme, subreddit FROM {table_name};'
     cursor.execute(select_all_query)
 
     # Fetch all rows from the result set

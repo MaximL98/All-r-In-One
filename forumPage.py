@@ -12,7 +12,7 @@ from PIL import ImageTk, Image
 
 sys.path.append(PATH_TO_SQLITE)
 from selectData import get_data
-from database import refresh_data, insert_theme
+from database import refresh_data, insert_theme, remove_subreddit, remove_themes
 from selectComments import get_comments
 from selectTheme import get_themes
 
@@ -162,7 +162,6 @@ class ForumApp:
                 def add_subreddits():
                     subreddits = simpledialog.askstring("Add Subreddits", "Enter Subreddits (comma-separated):")
 
-                    # Check if the user clicked Cancel
                     if subreddits is not None:
                         print(f"Theme: {theme}, Subreddits: {subreddits}")
                         temp = subreddits.split(',')
@@ -173,12 +172,18 @@ class ForumApp:
                        
 
                 def remove_subreddits():
-                    global flag
-                    flag = 1
+                    subreddits = simpledialog.askstring("Add Subreddits", "Enter Subreddits (comma-separated):")
+
+                    if subreddits is not None:
+                        temp = subreddits.split(',')
+                        subreddit_list = [x.strip(' ') for x in temp]
+                        remove_subreddit(theme, subreddits)
+                    else:
+                        print("User canceled the input.")
 
                 def remove_theme():
-                    global flag
-                    flag = 1
+                        remove_themes(theme)
+                    
 
 
                 theme = simpledialog.askstring("Edit Theme", "Which Theme You Want To Edit?")
@@ -292,7 +297,9 @@ class ForumApp:
         # Check if the user clicked Cancel
         if theme is not None and subreddits is not None:
             print(f"Theme: {theme}, Subreddits: {subreddits}")
-            insert_theme(theme,subreddits.split(','))
+            temp = subreddits.split(',')
+            subreddit_list = [x.strip(' ') for x in temp]
+            insert_theme(theme, subreddit_list)
         else:
             print("User canceled the input.")
 
