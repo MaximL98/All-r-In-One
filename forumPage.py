@@ -10,6 +10,14 @@ from urllib.error import HTTPError
 import io
 from PIL import ImageTk, Image
 
+# importing vlc module 
+import vlc 
+  
+# importing pafy module 
+import pafy 
+
+#from tkVideoPlayer import TkinterVideo
+
 sys.path.append(PATH_TO_SQLITE)
 from selectData import get_data
 from database import refresh_data, insert_theme, remove_subreddit, remove_themes
@@ -21,7 +29,7 @@ import webbrowser
 def callback(url):
     # Open website 
     webbrowser.open(url) 
-    
+
 
 class WebImage:
     def __init__(self, url, width=None, height=None):
@@ -353,6 +361,33 @@ class ForumApp:
                         else:
                             print(f"HTTP Error {e.code}: {e.reason}")
                             # Handle other HTTP errors as needed
+
+                ### TRYING TO ADD VIDEO PLAYER
+                '''if post.content.startswith(("https://v.redd.it")):
+                    try:
+                        # url of the video 
+                        url = post.content
+                        
+                        # creating pafy object of the video 
+                        video = pafy.new(url) 
+                        
+                        # getting best stream 
+                        best = video.getbest() 
+                        
+                        # creating vlc media player object 
+                        media = vlc.MediaPlayer(best.url) 
+                        
+                        # start playing video 
+                        media.play() 
+                    except HTTPError as e:
+                        if e.code == 404:
+                            print("Image not found. It may have been deleted.")
+                            # Handle the situation accordingly, e.g., provide a default image or log the event
+                        else:
+                            print(f"HTTP Error {e.code}: {e.reason}")
+                            # Handle other HTTP errors as needed'''
+                
+                
 
             
                 button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
