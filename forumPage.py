@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
 from ttkthemes import ThemedTk
-from paths import PATH_TO_SQLITE
+from paths import PATH_TO_SQLITE, PATH_TO_REDDIT_API, PATH_TO_VIDEOS
 import sys
 
 import urllib.request
@@ -12,13 +12,22 @@ from PIL import ImageTk, Image
 
 # importing vlc module 
 import vlc 
-  
-# importing pafy module 
-import pafy 
 
+import requests
+import cv2
+from io import BytesIO
+
+import os
+import re
+import subprocess
 #from tkVideoPlayer import TkinterVideo
 
 sys.path.append(PATH_TO_SQLITE)
+sys.path.append(PATH_TO_REDDIT_API)
+sys.path.append(PATH_TO_VIDEOS)
+
+
+from redditVideos import get_video
 from selectData import get_data
 from database import refresh_data, insert_theme, remove_subreddit, remove_themes
 from selectComments import get_comments
@@ -363,25 +372,17 @@ class ForumApp:
                             # Handle other HTTP errors as needed
 
                 ### TRYING TO ADD VIDEO PLAYER
-                '''if post.content.startswith(("https://v.redd.it")):
-                    try:
-                        # url of the video 
-                        url = post.content
+                if post.content.startswith(("https://v.redd.it")):
+                    button = ttk.Button(post_frame, text="View video", command=lambda p=post: self.view_video(p))
+                    button.grid(row=3, column=0, sticky="w")
+                    '''try:
+                       
                         
-                        # creating pafy object of the video 
-                        video = pafy.new(url) 
                         
-                        # getting best stream 
-                        best = video.getbest() 
-                        
-                        # creating vlc media player object 
-                        media = vlc.MediaPlayer(best.url) 
-                        
-                        # start playing video 
-                        media.play() 
+
                     except HTTPError as e:
                         if e.code == 404:
-                            print("Image not found. It may have been deleted.")
+                            print("Video not found. It may have been deleted.")
                             # Handle the situation accordingly, e.g., provide a default image or log the event
                         else:
                             print(f"HTTP Error {e.code}: {e.reason}")
@@ -397,6 +398,77 @@ class ForumApp:
                 # Set cursor on hover
                 button.bind("<Enter>", lambda event, button=button: button.configure(cursor="hand2"))
                 button.bind("<Leave>", lambda event, button=button: button.configure(cursor=""))
+
+
+    def view_video(self, post):
+        # Replace 'your_video_url' with the actual URL of the video you want to download
+        video_url = get_video(post.id)
+
+        # Download the video using requests
+        response = requests.get(video_url)
+
+        # Download the audio for the video
+        
+        pattern = re.compile(r'_(\d+)')
+
+        # Insert "_AUDIO_128" before the last part of the URL
+        audio_url = pattern.sub('', video_url)
+        # Split the URL based on "/"
+        url_parts = audio_url.split('/')
+        audio_url = '/'.join(url_parts[:-1] + [url_parts[-1].replace('DASH', 'DASH_AUDIO_128')])
+        response_audio = requests.get(audio_url)
+
+        print(audio_url)
+
+        if response.status_code == 200 and response_audio.status_code == 200:
+            file_name = os.path.join(PATH_TO_VIDEOS, f"video_{post.id}.mp4")
+            print(f"fileName = {file_name}")
+            file_name_video = os.path.join(PATH_TO_VIDEOS, f"video_only_{post.id}.mp4")
+            with open(file_name_video, 'wb') as video_file:
+                video_file.write(response.content)
+            print(f"Video downloaded successfully: {file_name_video}")
+
+            file_name_audio = os.path.join(PATH_TO_VIDEOS, f"audio_{post.id}.mp4")
+            with open(file_name_audio, 'wb') as audio_file:
+                audio_file.write(response_audio.content)
+            print(f"Video downloaded successfully: {file_name_audio}")
+
+
+            def merge_audio_video(video_path, audio_path, output_path):
+                print(f"video={file_name_video}")
+                print(f"audio={file_name_audio}")
+                # FFmpeg command to merge video and audio
+                cmd = [
+                    'ffmpeg',
+                    '-i', video_path,
+                    '-i', audio_path,
+                    '-c:v', 'copy',
+                    '-c:a', 'aac',
+                    '-strict', 'experimental',
+                    output_path
+                ]
+
+                # Execute the FFmpeg command
+                subprocess.run(cmd)
+
+            merge_audio_video(file_name_video, file_name_audio, file_name)
+
+            root=tk.Toplevel(self.root)
+            instance=vlc.Instance()
+            p=instance.media_player_new()
+            p.set_hwnd(root.winfo_id())
+            p.set_media(instance.media_new(file_name))
+            p.play()
+            root.mainloop()
+
+
+
+            ### TODO ###
+            '''I need to download the audio file separately hen combine them, either manually or using a tool like ffmpeg.
+             Also i need to add controlers to the VLC instance.'''
+
+        else:
+            print(f"Failed to download video. Status code: {response.status_code}")
 
     def view_comments(self, post):
         comment_window = tk.Toplevel(self.root)
