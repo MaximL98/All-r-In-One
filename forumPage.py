@@ -10,6 +10,11 @@ from urllib.error import HTTPError
 import io
 from PIL import ImageTk, Image
 
+import os
+import re
+import subprocess
+os.add_dll_directory('C:\\Program Files\\VideoLAN\\VLC')
+
 # importing vlc module 
 import vlc 
 
@@ -17,15 +22,23 @@ import requests
 import cv2
 from io import BytesIO
 
-import os
-import re
-import subprocess
+from moviepy.editor import VideoFileClip, AudioFileClip
+import tkvlc
+
+import pyaudio
+import wave
+import threading
+import time
+
+import datetime
+from tkinter import filedialog
+from tkVideoPlayer import TkinterVideo
+
 #from tkVideoPlayer import TkinterVideo
 
 sys.path.append(PATH_TO_SQLITE)
 sys.path.append(PATH_TO_REDDIT_API)
 sys.path.append(PATH_TO_VIDEOS)
-
 
 from redditVideos import get_video
 from selectData import get_data
@@ -34,11 +47,55 @@ from selectComments import get_comments
 from selectTheme import get_themes
 
 import webbrowser 
+import subprocess
 
 def callback(url):
     # Open website 
     webbrowser.open(url) 
 
+class AudioPlayer:
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.chunk = 1024
+        self.paused = False
+        self.play_thread = None
+
+        # Open the audio file
+        self.wf = wave.open(self.file_path, 'rb')
+
+        # Initialize PyAudio
+        self.p = pyaudio.PyAudio()
+
+        # Open stream
+        self.stream = self.p.open(format=self.p.get_format_from_width(self.wf.getsampwidth()),
+                                  channels=self.wf.getnchannels(),
+                                  rate=self.wf.getframerate(),
+                                  output=True)
+
+    def play(self):
+        data = self.wf.readframes(self.chunk)
+        while data:
+            while self.paused:
+                time.sleep(0.1)
+            self.stream.write(data)
+            data = self.wf.readframes(self.chunk)
+
+    def start(self):
+        self.play_thread = threading.Thread(target=self.play)
+        self.play_thread.start()
+
+    def pause(self):
+        self.paused = True
+
+    def unpause(self):
+        self.paused = False
+
+    def stop(self):
+        if self.play_thread:
+            self.play_thread.join()
+        self.stream.stop_stream()
+        self.stream.close()
+        self.p.terminate()
 
 class WebImage:
     def __init__(self, url, width=None, height=None):
@@ -435,32 +492,138 @@ class ForumApp:
 
 
             def merge_audio_video(video_path, audio_path, output_path):
-                print(f"video={file_name_video}")
-                print(f"audio={file_name_audio}")
-                # FFmpeg command to merge video and audio
-                cmd = [
-                    'ffmpeg',
-                    '-i', video_path,
-                    '-i', audio_path,
-                    '-c:v', 'copy',
-                    '-c:a', 'aac',
-                    '-strict', 'experimental',
-                    output_path
-                ]
+                # Load video and audio clips
+                video_clip = VideoFileClip(video_path)
+                audio_clip = AudioFileClip(audio_path)
 
-                # Execute the FFmpeg command
-                subprocess.run(cmd)
+                # Set video clip's audio to the loaded audio clip
+                video_clip = video_clip.set_audio(audio_clip)
 
-            merge_audio_video(file_name_video, file_name_audio, file_name)
+                # Write the result to a file
+                video_clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
+
+                # Close the clips
+                video_clip.close()
+                audio_clip.close()
+
+            if not os.path.exists(file_name):
+                merge_audio_video(file_name_video, file_name_audio, file_name)
+
+        
+            def on_close():
+                # Stop and release the media player before closing the window
+                videoplayer.stop()
+                videoplayer.release()
+                root.destroy()
+
+            def update_duration(event):
+                """ updates the duration after finding the duration """
+                duration = vid_player.video_info()["duration"]
+                end_time["text"] = str(datetime.timedelta(seconds=duration))
+                progress_slider["to"] = duration
+
+
+            def update_scale(event):
+                """ updates the scale value """
+                progress_value.set(vid_player.current_duration())
+
+
+            
+            def display_and_play_video(file_name):
+                """ displays and plays the video from the given file name """
+                if file_name:
+                    print(f"Now playing: {file_name}")
+                    vid_player.load(file_name)
+                    vid_player.play()  # Auto-play the video
+                    audio_player.start()
+
+                    progress_slider.config(to=0, from_=0)
+                    play_pause_btn["text"] = "Pause"
+                    progress_value.set(0)
+
+
+            def seek(value):
+                """ used to seek a specific timeframe """
+                vid_player.seek(int(value))
+
+
+            def skip(value: int):
+                """ skip seconds """
+                vid_player.seek(int(progress_slider.get())+value)
+                progress_value.set(progress_slider.get() + value)
+
+
+            def play_pause():
+                """ pauses and plays """
+                if vid_player.is_paused():
+                    vid_player.play()
+                    play_pause_btn["text"] = "Pause"
+                    audio_player.pause()
+
+                else:
+                    vid_player.pause()
+                    play_pause_btn["text"] = "Play"
+                    audio_player.unpause()
+
+
+            def video_ended(event):
+                """ handle video ended """
+                progress_slider.set(progress_slider["to"])
+                play_pause_btn["text"] = "Play"
+                progress_slider.set(0)
+                audio_player.stop()
+
 
             root=tk.Toplevel(self.root)
-            instance=vlc.Instance()
-            p=instance.media_player_new()
-            p.set_hwnd(root.winfo_id())
-            p.set_media(instance.media_new(file_name))
-            p.play()
-            root.mainloop()
+    
+            
+            root.title(post.title)
 
+            load_btn = tk.Button(root, text="Display Video", command=lambda: display_and_play_video(file_name))
+            load_btn.pack()
+
+            vid_player = TkinterVideo(scaled=True, master=root)
+            vid_player.pack(expand=True, fill="both")
+            audio_player = AudioPlayer(file_name_audio)
+
+            play_pause_btn = tk.Button(root, text="Play", command=play_pause)
+            play_pause_btn.pack()
+
+            skip_plus_5sec = tk.Button(root, text="Skip -5 sec", command=lambda: skip(-5))
+            skip_plus_5sec.pack(side="left")
+
+            start_time = tk.Label(root, text=str(datetime.timedelta(seconds=0)))
+            start_time.pack(side="left")
+
+            progress_value = tk.IntVar(root)
+
+            progress_slider = tk.Scale(root, variable=progress_value, from_=0, to=0, orient="horizontal", command=seek)
+            # progress_slider.bind("<ButtonRelease-1>", seek)
+            progress_slider.pack(side="left", fill="x", expand=True)
+
+            end_time = tk.Label(root, text=str(datetime.timedelta(seconds=0)))
+            end_time.pack(side="left")
+
+            vid_player.bind("<<Duration>>", update_duration)
+            vid_player.bind("<<SecondChanged>>", update_scale)
+            vid_player.bind("<<Ended>>", video_ended )
+
+            skip_plus_5sec = tk.Button(root, text="Skip +5 sec", command=lambda: skip(5))
+            skip_plus_5sec.pack(side="left")
+
+            root.mainloop()
+            
+            
+            
+            '''root.protocol("WM_DELETE_WINDOW", on_close)
+
+            videoplayer = TkinterVideo(master=root, scaled=True)
+            videoplayer.load(file_name)
+            videoplayer.pack(expand=True, fill="both")
+
+            videoplayer.play() # play the video
+
+            root.mainloop()'''
 
 
             ### TODO ###
