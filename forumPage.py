@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
 from ttkthemes import ThemedTk
-from paths import PATH_TO_SQLITE, PATH_TO_REDDIT_API, PATH_TO_VIDEOS
+from paths import PATH_TO_SQLITE, PATH_TO_REDDIT_API, PATH_TO_VIDEOS, PATH_TO_FFMPEG
 import sys
 
 import urllib.request
@@ -26,6 +26,7 @@ from moviepy.editor import VideoFileClip, AudioFileClip
 import tkvlc
 
 import pyaudio
+from pydub import AudioSegment
 import wave
 import threading
 import time
@@ -34,11 +35,10 @@ import datetime
 from tkinter import filedialog
 from tkVideoPlayer import TkinterVideo
 
-#from tkVideoPlayer import TkinterVideo
-
 sys.path.append(PATH_TO_SQLITE)
 sys.path.append(PATH_TO_REDDIT_API)
 sys.path.append(PATH_TO_VIDEOS)
+sys.path.append(PATH_TO_FFMPEG)
 
 from redditVideos import get_video
 from selectData import get_data
@@ -48,6 +48,9 @@ from selectTheme import get_themes
 
 import webbrowser 
 import subprocess
+
+from media_player_app import MediaPlayerApp
+
 
 def callback(url):
     # Open website 
@@ -91,10 +94,7 @@ class AudioPlayer:
         self.paused = False
 
     def stop(self):
-        if self.play_thread:
-            self.play_thread.join()
-        self.stream.stop_stream()
-        self.stream.close()
+        #self.stream.close()
         self.p.terminate()
 
 class WebImage:
@@ -428,25 +428,9 @@ class ForumApp:
                             print(f"HTTP Error {e.code}: {e.reason}")
                             # Handle other HTTP errors as needed
 
-                ### TRYING TO ADD VIDEO PLAYER
                 if post.content.startswith(("https://v.redd.it")):
                     button = ttk.Button(post_frame, text="View video", command=lambda p=post: self.view_video(p))
                     button.grid(row=3, column=0, sticky="w")
-                    '''try:
-                       
-                        
-                        
-
-                    except HTTPError as e:
-                        if e.code == 404:
-                            print("Video not found. It may have been deleted.")
-                            # Handle the situation accordingly, e.g., provide a default image or log the event
-                        else:
-                            print(f"HTTP Error {e.code}: {e.reason}")
-                            # Handle other HTTP errors as needed'''
-                
-                
-
             
                 button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
                 button.grid(row=2, column=0, sticky="w")
@@ -480,158 +464,35 @@ class ForumApp:
         if response.status_code == 200 and response_audio.status_code == 200:
             file_name = os.path.join(PATH_TO_VIDEOS, f"video_{post.id}.mp4")
             print(f"fileName = {file_name}")
+
             file_name_video = os.path.join(PATH_TO_VIDEOS, f"video_only_{post.id}.mp4")
             with open(file_name_video, 'wb') as video_file:
                 video_file.write(response.content)
             print(f"Video downloaded successfully: {file_name_video}")
 
-            file_name_audio = os.path.join(PATH_TO_VIDEOS, f"audio_{post.id}.mp4")
+            file_name_audio = os.path.join(PATH_TO_VIDEOS, f"audio_{post.id}.mp3")
             with open(file_name_audio, 'wb') as audio_file:
                 audio_file.write(response_audio.content)
-            print(f"Video downloaded successfully: {file_name_audio}")
+            print(f"Audio downloaded successfully: {file_name_audio}")
 
 
             def merge_audio_video(video_path, audio_path, output_path):
-                # Load video and audio clips
-                video_clip = VideoFileClip(video_path)
-                audio_clip = AudioFileClip(audio_path)
-
-                # Set video clip's audio to the loaded audio clip
-                video_clip = video_clip.set_audio(audio_clip)
-
-                # Write the result to a file
-                video_clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
-
-                # Close the clips
-                video_clip.close()
-                audio_clip.close()
+                subprocess.run(f"ffmpeg -i {video_path} -i {audio_path} -c copy {output_path}")
 
             if not os.path.exists(file_name):
                 merge_audio_video(file_name_video, file_name_audio, file_name)
 
-        
-            def on_close():
-                # Stop and release the media player before closing the window
-                videoplayer.stop()
-                videoplayer.release()
-                root.destroy()
+            def audio_player_stop():
+                media_player_app.stop()
+                media_player_app.destroy()
 
-            def update_duration(event):
-                """ updates the duration after finding the duration """
-                duration = vid_player.video_info()["duration"]
-                end_time["text"] = str(datetime.timedelta(seconds=duration))
-                progress_slider["to"] = duration
-
-
-            def update_scale(event):
-                """ updates the scale value """
-                progress_value.set(vid_player.current_duration())
-
-
-            
-            def display_and_play_video(file_name):
-                """ displays and plays the video from the given file name """
-                if file_name:
-                    print(f"Now playing: {file_name}")
-                    vid_player.load(file_name)
-                    vid_player.play()  # Auto-play the video
-                    audio_player.start()
-
-                    progress_slider.config(to=0, from_=0)
-                    play_pause_btn["text"] = "Pause"
-                    progress_value.set(0)
-
-
-            def seek(value):
-                """ used to seek a specific timeframe """
-                vid_player.seek(int(value))
-
-
-            def skip(value: int):
-                """ skip seconds """
-                vid_player.seek(int(progress_slider.get())+value)
-                progress_value.set(progress_slider.get() + value)
-
-
-            def play_pause():
-                """ pauses and plays """
-                if vid_player.is_paused():
-                    vid_player.play()
-                    play_pause_btn["text"] = "Pause"
-                    audio_player.pause()
-
-                else:
-                    vid_player.pause()
-                    play_pause_btn["text"] = "Play"
-                    audio_player.unpause()
-
-
-            def video_ended(event):
-                """ handle video ended """
-                progress_slider.set(progress_slider["to"])
-                play_pause_btn["text"] = "Play"
-                progress_slider.set(0)
-                audio_player.stop()
-
-
-            root=tk.Toplevel(self.root)
-    
-            
-            root.title(post.title)
-
-            load_btn = tk.Button(root, text="Display Video", command=lambda: display_and_play_video(file_name))
-            load_btn.pack()
-
-            vid_player = TkinterVideo(scaled=True, master=root)
-            vid_player.pack(expand=True, fill="both")
-            audio_player = AudioPlayer(file_name_audio)
-
-            play_pause_btn = tk.Button(root, text="Play", command=play_pause)
-            play_pause_btn.pack()
-
-            skip_plus_5sec = tk.Button(root, text="Skip -5 sec", command=lambda: skip(-5))
-            skip_plus_5sec.pack(side="left")
-
-            start_time = tk.Label(root, text=str(datetime.timedelta(seconds=0)))
-            start_time.pack(side="left")
-
-            progress_value = tk.IntVar(root)
-
-            progress_slider = tk.Scale(root, variable=progress_value, from_=0, to=0, orient="horizontal", command=seek)
-            # progress_slider.bind("<ButtonRelease-1>", seek)
-            progress_slider.pack(side="left", fill="x", expand=True)
-
-            end_time = tk.Label(root, text=str(datetime.timedelta(seconds=0)))
-            end_time.pack(side="left")
-
-            vid_player.bind("<<Duration>>", update_duration)
-            vid_player.bind("<<SecondChanged>>", update_scale)
-            vid_player.bind("<<Ended>>", video_ended )
-
-            skip_plus_5sec = tk.Button(root, text="Skip +5 sec", command=lambda: skip(5))
-            skip_plus_5sec.pack(side="left")
-
-            root.mainloop()
-            
-            
-            
-            '''root.protocol("WM_DELETE_WINDOW", on_close)
-
-            videoplayer = TkinterVideo(master=root, scaled=True)
-            videoplayer.load(file_name)
-            videoplayer.pack(expand=True, fill="both")
-
-            videoplayer.play() # play the video
-
-            root.mainloop()'''
-
-
-            ### TODO ###
-            '''I need to download the audio file separately hen combine them, either manually or using a tool like ffmpeg.
-             Also i need to add controlers to the VLC instance.'''
+            media_player_app = MediaPlayerApp()
+            media_player_app.protocol("WM_DELETE_WINDOW", audio_player_stop)
+            media_player_app.play_video(file_name)
 
         else:
             print(f"Failed to download video. Status code: {response.status_code}")
+
 
     def view_comments(self, post):
         comment_window = tk.Toplevel(self.root)
