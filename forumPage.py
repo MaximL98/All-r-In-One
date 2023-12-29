@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
+from tkinter.messagebox import askyesno
 from ttkthemes import ThemedTk
 from paths import PATH_TO_SQLITE, PATH_TO_REDDIT_API, PATH_TO_VIDEOS, PATH_TO_FFMPEG
 import sys
@@ -162,8 +163,9 @@ class Subreddits:
 class ForumApp:
     def __init__(self, root):
         self.root = root
+        self.root.attributes('-fullscreen', True)
         self.root.title("ALL r/ In One")
-        self.root.geometry("800x600")  # Set the initial window size
+        #self.root.geometry("800x600")  # Set the initial window size
 
         # Dark mode theme configuration
         style = ttk.Style()
@@ -255,8 +257,6 @@ class ForumApp:
 
                 def remove_theme():
                         remove_themes(theme)
-                    
-
 
                 theme = simpledialog.askstring("Edit Theme", "Which Theme You Want To Edit?")
 
@@ -274,8 +274,6 @@ class ForumApp:
 
                     close_button = tk.Button(box, text="Close", command=box.destroy)
                     close_button.pack(pady=10)
-                    
-                    
 
                 if flag == 1:
                     subreddits = simpledialog.askstring("Edit Theme", "Enter Subreddits (comma-separated):")
@@ -289,9 +287,7 @@ class ForumApp:
                 
 
             toggle_menu_frame = tk.Frame(root, bg='#2b0945')
-            
-            # Just an example for later, will need to add 60 to y in placement for each new button
-        
+                    
             obj = get_themes()
             y = 20
             for key, value in obj.items():
@@ -304,7 +300,6 @@ class ForumApp:
 
                 y+=60
 
-
             window_height = root.winfo_height()
 
             edit_btn = tk.Button(toggle_menu_frame, text="Edit Themes", font=('Bold', 12), bd=0, bg='#2b0945', fg='white',
@@ -312,12 +307,15 @@ class ForumApp:
 
             edit_btn.place(x=20, y=window_height-100)
 
-
             toggle_menu_frame.place(x=0, y=50, height=window_height, width=200)
 
             toggle_btn.config(text='X')
             toggle_btn.config(command=collapse_toggle_menu)
 
+        def exit_page():
+            ans = askyesno(title='Exit', message='Sure Wanna Exit ?')
+            if ans:
+                root.destroy()
 
         
         head_frame = tk.Frame(root, bg='#2b0945', highlightbackground='white', highlightthickness=1)
@@ -327,13 +325,15 @@ class ForumApp:
  
         toggle_btn.pack(side=tk.LEFT, anchor=tk.W)
 
+
+        exit_btn = tk.Button(head_frame, text='X', bg='#2b0945', fg='white', font=('Bold', 20),
+                                bd=0,activebackground='#2b0945', activeforeground='white', command=exit_page)
+ 
+        exit_btn.pack(side=tk.RIGHT, anchor=tk.W)
+
         head_frame.pack(side=tk.TOP, fill=tk.X)
         head_frame.pack_propagate(False)
         head_frame.configure(height=50)
-
-        
-        
-
 
         self.posts = []
         page_title = '/r ALL'
