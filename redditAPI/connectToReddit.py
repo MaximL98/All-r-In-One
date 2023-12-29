@@ -12,10 +12,15 @@ def readPassword():
         pw = f.read()
     return pw
 
+def readUsername():
+    with open("redditAPI/username.txt", "r") as f:
+        username = f.read()
+    return username
+
 def loginToUser():
     # here we pass our login method (password), username, and password
     data = {'grant_type': 'password',
-            'username': 'OneVsALL',
+            'username': readUsername(),
             'password': readPassword()}
     return data
 
