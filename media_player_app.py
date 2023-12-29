@@ -8,7 +8,8 @@ class MediaPlayerApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Media Player")
-        self.attributes('-fullscreen', True)
+        #self.attributes('-fullscreen', True)
+        self.state("zoomed")
         self.configure(bg="#302f2f")
         self.initialize_player()
 
@@ -69,15 +70,6 @@ class MediaPlayerApp(tk.Tk):
             command=self.rewind,
         )
         self.rewind_button.pack(side=tk.LEFT, pady=5)
-        self.exit_button = tk.Button(
-            self.control_buttons_frame,
-            text="Exit",
-            font=("Arial", 12, "bold"),
-            bg="#660000",
-            fg="white",
-            command=self.exit_video_player,
-        )
-        self.exit_button.pack(side=tk.LEFT, padx=20, pady=5)
         self.progress_bar = VideoProgressBar(
             self, self.set_video_position, bg="#e0e0e0", highlightthickness=0
         )
@@ -144,9 +136,6 @@ class MediaPlayerApp(tk.Tk):
             total_duration_str = str(timedelta(milliseconds=total_duration))[:-3]
             self.time_label.config(text=f"{current_time_str} / {total_duration_str}")
         self.after(1000, self.update_video_progress)
-
-    def exit_video_player(self):
-        self.destroy()
 
 
 class VideoProgressBar(tk.Scale):

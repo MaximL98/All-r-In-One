@@ -2,8 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
 from tkinter.messagebox import askyesno
+from tkinter import PhotoImage
 from ttkthemes import ThemedTk
-from paths import PATH_TO_SQLITE, PATH_TO_REDDIT_API, PATH_TO_VIDEOS, PATH_TO_FFMPEG
+from paths import PATH_TO_SQLITE, PATH_TO_REDDIT_API, PATH_TO_VIDEOS, PATH_TO_FFMPEG, PATH_TO_IMAGES
 import sys
 
 import urllib.request
@@ -40,6 +41,7 @@ sys.path.append(PATH_TO_SQLITE)
 sys.path.append(PATH_TO_REDDIT_API)
 sys.path.append(PATH_TO_VIDEOS)
 sys.path.append(PATH_TO_FFMPEG)
+sys.path.append(PATH_TO_IMAGES)
 
 from redditVideos import get_video
 from selectData import get_data
@@ -52,6 +54,7 @@ import subprocess
 
 from media_player_app import MediaPlayerApp
 
+import customtkinter
 
 def callback(url):
     # Open website 
@@ -156,16 +159,14 @@ class Subreddits:
         self.theme = theme
         self.subreddits = subreddits
 
-
-
-
           
 class ForumApp:
     def __init__(self, root):
         self.root = root
         self.root.attributes('-fullscreen', True)
         self.root.title("ALL r/ In One")
-        #self.root.geometry("800x600")  # Set the initial window size
+        global window_width
+        window_width = self.root.winfo_screenwidth()
 
         # Dark mode theme configuration
         style = ttk.Style()
@@ -195,7 +196,6 @@ class ForumApp:
         THEME = 'News'
 
         def toggle_menu():
-
             def collapse_toggle_menu():
                 toggle_menu_frame.destroy()
                 toggle_btn.config(text='☰')
@@ -301,7 +301,7 @@ class ForumApp:
                 y+=60
 
             window_height = root.winfo_height()
-
+            
             edit_btn = tk.Button(toggle_menu_frame, text="Edit Themes", font=('Bold', 12), bd=0, bg='#2b0945', fg='white',
                                     activebackground='#2b0945', activeforeground='white', command=edit_themes)
 
@@ -311,6 +311,8 @@ class ForumApp:
 
             toggle_btn.config(text='X')
             toggle_btn.config(command=collapse_toggle_menu)
+
+        
 
         def exit_page():
             ans = askyesno(title='Exit', message='Sure Wanna Exit ?')
@@ -362,6 +364,7 @@ class ForumApp:
         self.add_theme_button = tk.Button(root, text="Add Theme", command=self.show_theme_popup)
         self.add_theme_button.pack(side="left", anchor="e", padx=10, pady=10)
 
+
     def show_theme_popup(self):
         theme = simpledialog.askstring("Add Theme", "Enter Theme:")
         subreddits = simpledialog.askstring("Add Theme", "Enter Subreddits (comma-separated):")
@@ -378,10 +381,12 @@ class ForumApp:
 
     def add_post_buttons(self):
         global THEME
+        global window_width
         for i, post in enumerate(self.posts):
             if post.theme == THEME:
                 post_frame = tk.Frame(self.scrollable_frame.scrollable_frame, bg="#1c1c1c")
-                post_frame.pack(pady=5, padx=75, fill='both')
+                post_frame.pack(pady=5, padx=window_width/3, fill='both')
+                
 
                 post_text = tk.Text(post_frame, wrap="word", bg="#1c1c1c", fg="white", padx=4, pady=1)
 
@@ -397,16 +402,9 @@ class ForumApp:
                 post_text.tag_configure("title", font=("Helvetica", 16, "bold"), justify="center")
                 post_text.tag_configure("subreddit", font=("Helvetica", 11))
 
-                
                 post_text.insert("1.0", f"r/{post.subreddit}", "subreddit")
-
-
                 post_text.insert("1.0", f"{post.content}\n\n", "content")
-
-                
                 post_text.insert("1.0", f"{post.title}\n\n", "title")
-
-                
                 
                 post_text.config(state=tk.DISABLED)  # Make the Text widget read-only
 
@@ -429,8 +427,21 @@ class ForumApp:
                             # Handle other HTTP errors as needed
 
                 if post.content.startswith(("https://v.redd.it")):
-                    button = ttk.Button(post_frame, text="View video", command=lambda p=post: self.view_video(p))
-                    button.grid(row=3, column=0, sticky="w")
+                    post_text.config(height=10)
+                    play_img_path = os.path.join(PATH_TO_IMAGES, 'play.png')
+                    #play_img = PhotoImage(file=play_img_path)
+                    button_image = ImageTk.PhotoImage(Image.open(play_img_path))
+                    image_button = customtkinter.CTkButton(master=post_frame,
+                                                           image=button_image,
+                                                           width=640,
+                                                           height=640,
+                                                           border_width=0,
+                                                           fg_color='#1c1c1c',
+                                                           hover_color='#2e2d2d',
+                                                           text='',
+                                                           command=lambda p=post: self.view_video(p))
+                    #button = tk.Button(post_frame, image=play_img, command=lambda p=post: self.view_video(p))
+                    image_button.grid(row=1, column=0, sticky="nsew")
             
                 button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
                 button.grid(row=2, column=0, sticky="w")
