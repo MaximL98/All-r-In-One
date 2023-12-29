@@ -32,41 +32,9 @@ def getData(subreddit):
         df = pd.concat([df, new_row], ignore_index=True)
     return(df)
 
-
 # Function to write the data into a txt file
 def writeToTxt(df):
     df.to_string('redditAPI/output.txt')
     with open('redditAPI/output.txt', 'w', encoding='utf-8') as f:
         f.write(df.to_string())
     df.to_csv('redditAPI/output.txt', sep='\t')
-
-#writeToTxt(getData())
-
-#DATA = getData('worldnews')
-
-
-""" # Create a VideoCapture object
-cap = cv2.VideoCapture(getData()['secure_media'][4]['reddit_video']['fallback_url'])
-
-# Check if the video file was opened successfully
-if not cap.isOpened():
-    print("Error opening video file")
-
-# Read until video is completed
-while cap.isOpened():
-    # Capture frame-by-frame
-    ret, frame = cap.read()
-    if ret:
-        # Display the resulting frame
-        cv2.imshow('Video', frame)
-        # Break the loop on 'q' key press
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    else:
-        break
-
-# When everything done, release the video capture and video write objects
-cap.release()
-
-# Closes all the frames
-cv2.destroyAllWindows() """

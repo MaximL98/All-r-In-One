@@ -29,3 +29,4 @@ sqlite/allR.db
 sqlite/random_1.py
 ffmpeg.exe
 redditAPI/username.txt
+redditAPI/redditInfo.py
