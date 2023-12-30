@@ -1,5 +1,5 @@
 import praw
-from redditInfo import CLIENT_ID, SECRET_TOKEN
+from redditInf import CLIENT_ID, SECRET_TOKEN
 
 def readPassword():
     with open("redditAPI/pw.txt", "r") as f:

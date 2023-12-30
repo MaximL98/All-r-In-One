@@ -2,7 +2,7 @@ import requests
 import sys
 from paths import PATH_TO_REDDIT_API
 sys.path.append(PATH_TO_REDDIT_API)
-from redditInfo import CLIENT_ID, SECRET_TOKEN
+from redditInf import CLIENT_ID, SECRET_TOKEN
 
 # note that CLIENT_ID refers to 'personal use script' and SECRET_TOKEN to 'token'
 auth = requests.auth.HTTPBasicAuth(CLIENT_ID, SECRET_TOKEN)

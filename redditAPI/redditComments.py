@@ -1,5 +1,5 @@
 import praw
-from redditInfo import CLIENT_ID, SECRET_TOKEN
+from redditInf import CLIENT_ID, SECRET_TOKEN
 import pandas as pd
 
 
