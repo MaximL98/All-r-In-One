@@ -126,12 +126,13 @@ class WebImage:
 
 
 class Post:
-    def __init__(self, title, content, subreddit, id, theme):
+    def __init__(self, title, content, subreddit, id, theme, selftext):
         self.id = id
         self.title = title
         self.content = content
         self.subreddit = subreddit
         self.theme = theme
+        self.selftext = selftext
         self.comments = []
 
 
@@ -209,7 +210,7 @@ class ForumApp:
 
                 selected_data = get_data(theme)
                 for data in selected_data:
-                    self.posts.append(Post(data[3], data[4], data[2], data[0], theme))
+                    self.posts.append(Post(data[3], data[4], data[2], data[0], theme, data[5]))
 
                 # Change the title_label text
                 page_title = theme
@@ -350,7 +351,7 @@ class ForumApp:
             for key in themes.keys():
                 selected_data = get_data(key)
                 for data in selected_data:
-                    self.posts.append(Post(data[3], data[4], data[2], data[0], key))
+                    self.posts.append(Post(data[3], data[4], data[2], data[0], key, data[5]))
             self.add_post_buttons()
 
         # Bind the mouse wheel event to the main window
@@ -401,8 +402,13 @@ class ForumApp:
 
                 post_text.tag_configure("title", font=("Helvetica", 16, "bold"), justify="center")
                 post_text.tag_configure("subreddit", font=("Helvetica", 11))
+                post_text.tag_configure("selftext", font=("Helvetica", 14))
 
-                post_text.insert("1.0", f"r/{post.subreddit}", "subreddit")
+                if post.selftext:
+                    post_text.config(height=50)
+                    post_text.insert("1.0", f"{post.selftext}", "selftext")
+
+                post_text.insert("1.0", f"r/{post.subreddit}\n\n", "subreddit")
                 post_text.insert("1.0", f"{post.content}\n\n", "content")
                 post_text.insert("1.0", f"{post.title}\n\n", "title")
                 
@@ -541,7 +547,7 @@ class ForumApp:
             for key in themes.keys():
                 selected_data = get_data(key)
                 for data in selected_data:
-                    self.posts.append(Post(data[3], data[4], data[2], data[0], key))
+                    self.posts.append(Post(data[3], data[4], data[2], data[0], key, data[5]))
 
 
         # Clear existing widgets in the scrollable frame

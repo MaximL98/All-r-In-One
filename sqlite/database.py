@@ -50,8 +50,8 @@ def delete_rows(connection, table_name, column_name , column):
 def refresh_data(theme):
     conn = create_connection('sqlite/allR.db')
     insert_data_sql = """
-    INSERT OR IGNORE INTO data (post_id, theme, subreddit, title, content)
-    VALUES (?, ?, ?, ?, ?);
+    INSERT OR IGNORE INTO data (post_id, theme, subreddit, title, content, selftext)
+    VALUES (?, ?, ?, ?, ?, ?);
     """
     themes = get_themes()
     if themes != None:
@@ -62,7 +62,8 @@ def refresh_data(theme):
                     delete_rows(conn, 'data', 'subreddit', value)
                     for i in range(2, len(DATA)):
                         # Data to be inserted
-                        data = (DATA['name'][i][3:], key, DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i])
+                        data = (DATA['name'][i][3:], key, 
+                            DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i], DATA['selftext'][i])
                         execute_query(conn, insert_data_sql, data)
 
 def insert_comments(post_id, comment_limit):
@@ -120,10 +121,14 @@ CREATE TABLE IF NOT EXISTS data (
     theme TEXT NOT NULL,
     subreddit TEXT NOT NULL,
     title TEXT NOT NULL,
-    content TEXT NOT NULL
+    content TEXT NOT NULL,
+    selftext TEXT NOT NULL
 );
 """
 execute_query(conn, create_data_table)  
+
+'''alter_query = f"ALTER TABLE data ADD COLUMN selftext TEXT"
+execute_query(conn, alter_query) '''
 
 # Create comment table
 create_comment_table = """
