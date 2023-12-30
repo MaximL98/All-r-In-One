@@ -16,6 +16,7 @@ class MediaPlayerApp(tk.Tk):
     def initialize_player(self):
         self.instance = vlc.Instance()
         self.media_player = self.instance.media_player_new()
+        self.media_player.audio_set_volume(20)
         self.current_file = None
         self.playing_video = False
         self.video_paused = False
@@ -34,6 +35,22 @@ class MediaPlayerApp(tk.Tk):
         self.time_label.pack(pady=5)
         self.control_buttons_frame = tk.Frame(self, bg="#302f2f")
         self.control_buttons_frame.pack(pady=5)
+        
+        # Volume slider
+        self.volume_slider = tk.Scale(
+            self.control_buttons_frame,
+            from_=0,
+            to=100,
+            orient=tk.HORIZONTAL,
+            label="Volume",
+            command=self.set_volume,
+            length=100,
+            bg="#51855b",
+            fg="white",
+        )
+        self.volume_slider.set(20)
+        self.volume_slider.pack(side=tk.LEFT, padx=10, pady=5)
+
         self.pause_button = tk.Button(
             self.control_buttons_frame,
             text="Pause",
@@ -69,11 +86,18 @@ class MediaPlayerApp(tk.Tk):
             fg="white",
             command=self.rewind,
         )
-        self.rewind_button.pack(side=tk.LEFT, pady=5)
+        self.rewind_button.pack(side=tk.LEFT, padx=10, pady=5)
+
         self.progress_bar = VideoProgressBar(
             self, self.set_video_position, bg="#e0e0e0", highlightthickness=0
         )
         self.progress_bar.pack(fill=tk.X, padx=10, pady=5)
+
+
+    def set_volume(self, value):
+        if self.playing_video:
+            volume = int(value)
+            self.media_player.audio_set_volume(volume)
 
 
     def get_duration_str(self):
