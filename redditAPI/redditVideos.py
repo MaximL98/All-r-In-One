@@ -6,11 +6,16 @@ def readPassword():
         pw = f.read()
     return pw
 
+def readUsername():
+    with open("redditAPI/username.txt", "r") as f:
+        username = f.read()
+    return username
+    
 def get_video(post_id):
     # Create a Reddit instance
     reddit = praw.Reddit(client_id=CLIENT_ID,
                          client_secret=SECRET_TOKEN,
-                         username='OneVsALL',
+                         username=readUsername(),
                          password=readPassword(),
                          user_agent='MyBot/0.0.1')
 
