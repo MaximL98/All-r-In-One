@@ -2,7 +2,6 @@
 # ALL r/ In One
 
 ALL r/ In One is a versatile desktop application built using Python and Tkinter, providing a unified interface for browsing and interacting with various Reddit themes. The application supports different themes, including News, Videos, and more, allowing users to explore content from multiple subreddits in one consolidated view.
-Features
 
 ## Features
 
