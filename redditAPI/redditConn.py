@@ -2,9 +2,13 @@ import requests
 import pandas as pd
 import cv2
 import sys
-from paths import PATH_TO_REDDIT_API
-sys.path.append(PATH_TO_REDDIT_API)
+import os 
+from dotenv import dotenv_values
 from connectToReddit import HEADERS
+
+config = dotenv_values("config.env")
+PATH_TO_REDDIT_API = config['PATH_TO_REDDIT_API']
+sys.path.append(PATH_TO_REDDIT_API)
 
 sys.stdin.reconfigure(encoding='utf-8')
 sys.stdout.reconfigure(encoding='utf-8')

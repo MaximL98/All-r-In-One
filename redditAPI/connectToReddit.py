@@ -1,27 +1,24 @@
 import requests
 import sys
-from paths import PATH_TO_REDDIT_API
+import os 
+from dotenv import dotenv_values
+
+config = dotenv_values("config.env")
+PATH_TO_REDDIT_API = config["PATH_TO_REDDIT_API"]
+CLIENT_ID = config['CLIENT_ID']
+SECRET_TOKEN = config['SECRET_TOKEN']
+PASSWORD = config["PASSWORD"]
+USERNAME = config["USERNAME"]
+
 sys.path.append(PATH_TO_REDDIT_API)
-from redditInf import CLIENT_ID, SECRET_TOKEN
 
-# note that CLIENT_ID refers to 'personal use script' and SECRET_TOKEN to 'token'
 auth = requests.auth.HTTPBasicAuth(CLIENT_ID, SECRET_TOKEN)
-
-def readPassword():
-    with open("redditAPI/pw.txt", "r") as f:
-        pw = f.read()
-    return pw
-
-def readUsername():
-    with open("redditAPI/username.txt", "r") as f:
-        username = f.read()
-    return username
 
 def loginToUser():
     # here we pass our login method (password), username, and password
     data = {'grant_type': 'password',
-            'username': readUsername(),
-            'password': readPassword()}
+            'username': USERNAME,
+            'password': PASSWORD}
     return data
 
 # setup our header info, which gives reddit a brief description of our app

@@ -1,22 +1,19 @@
 import praw
-from redditInf import CLIENT_ID, SECRET_TOKEN
+import os 
+from dotenv import dotenv_values
 
-def readPassword():
-    with open("redditAPI/pw.txt", "r") as f:
-        pw = f.read()
-    return pw
-
-def readUsername():
-    with open("redditAPI/username.txt", "r") as f:
-        username = f.read()
-    return username
+config = dotenv_values("config.env")
+CLIENT_ID = config['CLIENT_ID']
+SECRET_TOKEN = config['SECRET_TOKEN']
+PASSWORD = config["PASSWORD"]
+USERNAME = config["USERNAME"]
     
 def get_video(post_id):
     # Create a Reddit instance
     reddit = praw.Reddit(client_id=CLIENT_ID,
                          client_secret=SECRET_TOKEN,
-                         username=readUsername(),
-                         password=readPassword(),
+                         username=USERNAME,
+                         password=PASSWORD,
                          user_agent='MyBot/0.0.1')
 
     # Access the subreddit and get the submission (post) by ID
@@ -24,5 +21,4 @@ def get_video(post_id):
 
     # Extract the video URL from the submission
     video_url = submission.media['reddit_video']['fallback_url']
-    print(f"video_url={video_url}")
     return video_url

@@ -4,7 +4,6 @@ from tkinter import simpledialog
 from tkinter.messagebox import askyesno
 from tkinter import PhotoImage
 from ttkthemes import ThemedTk
-from paths import PATH_TO_SQLITE, PATH_TO_REDDIT_API, PATH_TO_VIDEOS, PATH_TO_FFMPEG, PATH_TO_IMAGES
 import sys
 
 import urllib.request
@@ -24,7 +23,6 @@ import requests
 import cv2
 from io import BytesIO
 
-from moviepy.editor import VideoFileClip, AudioFileClip
 import tkvlc
 
 import pyaudio
@@ -35,7 +33,21 @@ import time
 
 import datetime
 from tkinter import filedialog
-from tkVideoPlayer import TkinterVideo
+
+import webbrowser 
+import subprocess
+
+from media_player_app import MediaPlayerApp
+
+import customtkinter
+from dotenv import dotenv_values
+
+config = dotenv_values("config.env")
+PATH_TO_REDDIT_API = config["PATH_TO_REDDIT_API"]
+PATH_TO_SQLITE = config['PATH_TO_SQLITE']
+PATH_TO_VIDEOS = config['PATH_TO_VIDEOS']
+PATH_TO_FFMPEG = config["PATH_TO_FFMPEG"]
+PATH_TO_IMAGES = config["PATH_TO_IMAGES"]
 
 sys.path.append(PATH_TO_SQLITE)
 sys.path.append(PATH_TO_REDDIT_API)
@@ -48,13 +60,6 @@ from selectData import get_data
 from database import refresh_data, insert_theme, remove_subreddit, remove_themes
 from selectComments import get_comments
 from selectTheme import get_themes
-
-import webbrowser 
-import subprocess
-
-from media_player_app import MediaPlayerApp
-
-import customtkinter
 
 def callback(url):
     # Open website 

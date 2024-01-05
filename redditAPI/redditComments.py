@@ -1,24 +1,21 @@
 import praw
-from redditInf import CLIENT_ID, SECRET_TOKEN
 import pandas as pd
+import os 
+from dotenv import dotenv_values
 
+config = dotenv_values("config.env")
+CLIENT_ID = config['CLIENT_ID']
+SECRET_TOKEN = config['SECRET_TOKEN']
+PASSWORD = config["PASSWORD"]
+USERNAME = config["USERNAME"]
 
-def readPassword():
-    with open("redditAPI/pw.txt", "r") as f:
-        pw = f.read()
-    return pw
-
-def readUsername():
-    with open("redditAPI/username.txt", "r") as f:
-        username = f.read()
-    return username
 
 def get_comments(post_id, comment_limit):
     # Create a Reddit instance
     reddit = praw.Reddit(client_id=CLIENT_ID,
                          client_secret=SECRET_TOKEN,
-                         username=readUsername(),
-                         password=readPassword(),
+                         username=USERNAME,
+                         password=PASSWORD,
                          user_agent='MyBot/0.0.1')
 
     # Access the subreddit and get the submission (post) by ID
