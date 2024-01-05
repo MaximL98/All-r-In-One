@@ -32,3 +32,4 @@ redditAPI/username.txt
 redditAPI/redditInfo.py
 redditAPI/token.py
 redditAPI/redditInf.py
+config.env
