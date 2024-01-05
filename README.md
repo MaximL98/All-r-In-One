@@ -33,7 +33,7 @@ To run this project, you will need to add the following environment variables to
 `PATH_TO_REDDIT_API` (path to folder)
 `PATH_TO_VIDEOS` (path to folder)
 `PATH_TO_IMAGES` (path to folder)
-`PATH_TO_FFMPEG` (path to ffmeg\bin)
+`PATH_TO_FFMPEG` (path to ffmpeg\bin)
 
 [![How to access the Reddit API directly](https://www.reddit.com/wiki/api/)]()
 
