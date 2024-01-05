@@ -43,7 +43,9 @@ def execute_query(connection, query, data=None):
 def delete_rows(connection, table_name, column_name , column):
     if column == 'ALL':
         delete_query = f"DELETE FROM {table_name}"
+    column = column.lower()
     delete_query = f"DELETE FROM {table_name} WHERE {column_name} = '{column}';"
+    print(f"delete_query={delete_query}")
     cursor = connection.cursor()
     try:
         cursor.execute(delete_query)
