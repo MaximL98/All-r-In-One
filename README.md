@@ -23,7 +23,7 @@ ALL r/ In One is a versatile desktop application built using Python and Tkinter,
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your **config.env** file, so you can run the Reddit API.
+To run this project, you will need to add the following environment variables to your **config.env** file, so you can run the Reddit API ([![How to access the Reddit API directly](https://www.reddit.com/wiki/api/)]()).
 
 `CLIENT_ID`
 `SECRET_TOKEN`
@@ -35,7 +35,7 @@ To run this project, you will need to add the following environment variables to
 `PATH_TO_IMAGES` (path to folder)
 `PATH_TO_FFMPEG` (path to ffmpeg\bin)
 
-[![How to access the Reddit API directly](https://www.reddit.com/wiki/api/)]()
+
 
 ## 🔗 Links
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/maxim-lebedinsky/)
