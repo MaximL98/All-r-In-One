@@ -29,6 +29,11 @@ To run this project, you will need to add the following environment variables to
 `SECRET_TOKEN`
 `USERNAME`
 `PASSWORD`
+`PATH_TO_SQLITE` (path to folder)
+`PATH_TO_REDDIT_API` (path to folder)
+`PATH_TO_VIDEOS` (path to folder)
+`PATH_TO_IMAGES` (path to folder)
+`PATH_TO_FFMPEG` (path to ffmeg\bin)
 
 [![How to access the Reddit API directly](https://www.reddit.com/wiki/api/)]()
 
