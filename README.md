@@ -23,7 +23,7 @@ ALL r/ In One is a versatile desktop application built using Python and Tkinter,
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file, so you can run the Reddit API.
+To run this project, you will need to add the following environment variables to your **config.env** file, so you can run the Reddit API.
 
 `CLIENT_ID`
 `SECRET_TOKEN`
