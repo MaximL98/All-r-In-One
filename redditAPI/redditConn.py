@@ -31,14 +31,8 @@ def getData(subreddit):
             'selftext': [post['data']['selftext']],
             'secure_media' : [post['data']['secure_media']],
             'link_url': [post['data']['url']],
-            'name': [post['data']['name']]
+            'name': [post['data']['name']],
+            'gallery_name': [post['data']['gallery_name']]
             })
         df = pd.concat([df, new_row], ignore_index=True)
     return(df)
-
-# Function to write the data into a txt file
-def writeToTxt(df):
-    df.to_string('redditAPI/output.txt')
-    with open('redditAPI/output.txt', 'w', encoding='utf-8') as f:
-        f.write(df.to_string())
-    df.to_csv('redditAPI/output.txt', sep='\t')
