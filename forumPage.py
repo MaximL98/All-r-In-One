@@ -42,6 +42,9 @@ from media_player_app import MediaPlayerApp
 import customtkinter
 from dotenv import dotenv_values
 
+from linkpreview import link_preview
+import validators
+
 config = dotenv_values("config.env")
 PATH_TO_REDDIT_API = config["PATH_TO_REDDIT_API"]
 PATH_TO_SQLITE = config['PATH_TO_SQLITE']
@@ -60,6 +63,7 @@ from selectData import get_data
 from database import refresh_data, insert_theme, remove_subreddit, remove_themes
 from selectComments import get_comments
 from selectTheme import get_themes
+from gallery_display import GalleryDisplay
 
 def callback(url):
     # Open website 
@@ -396,11 +400,29 @@ class ForumApp:
 
                 post_text = tk.Text(post_frame, wrap="word", bg="#1c1c1c", fg="white", padx=4, pady=1)
 
-                if post.theme == "News":
+                if validators.url(post.content):
                     post_text.tag_bind("content", "<Button-1>", lambda event, url=post.content: callback(url))
                     post_text.tag_configure("content", foreground="#5dade2", underline=True, font=("Helvetica", 12))
                     post_text.tag_bind("content", "<Enter>", lambda event: post_text.config(cursor="hand2"))
                     post_text.tag_bind("content", "<Leave>", lambda event: post_text.config(cursor=""))
+
+                    '''try:
+                        preview = link_preview(post.content, parser="lxml")
+                    except Exception as e:
+                        print(f"HTTP ERROR: {e}")
+
+                    if preview.description != None and "redd" not in post.content:
+                        post_text.insert("1.0", f"{preview.description}", "selftext")
+
+                    print("title:", preview.title)
+                    print("description:", preview.description)
+                    print("image:", preview.image)
+                    print("force_title:", preview.force_title)
+                    print("absolute_image:", preview.absolute_image)
+                    print("site_name:", preview.site_name)
+                    print("favicon:", preview.favicon)
+                    print("absolute_favicon:", preview.absolute_favicon)'''
+
                 else:
                     post_text.tag_configure("content", font=("Helvetica", 12))
 
@@ -421,10 +443,28 @@ class ForumApp:
 
                 post_text.grid(row=0, column=0, sticky="nsew")
 
+                if "gallery" in post.content:
+                    post_text.config(height=10)
+                    play_img_path = os.path.join(PATH_TO_IMAGES, 'play.png')
+                    #play_img = PhotoImage(file=play_img_path)
+                    button_image = ImageTk.PhotoImage(Image.open(play_img_path))
+                    display_gallery_button = customtkinter.CTkButton(master=post_frame,
+                                                           image=button_image,
+                                                           width=640,
+                                                           height=640,
+                                                           border_width=0,
+                                                           fg_color='#1c1c1c',
+                                                           hover_color='#2e2d2d',
+                                                           text='',
+                                                           command=lambda post=post: self.view_gallery(post))
+                    #button = tk.Button(post_frame, image=play_img, command=lambda p=post: self.view_video(p))
+                    display_gallery_button.grid(row=1, column=0, sticky="nsew")
+
                 # Display image if the content ends with "png" or "jpg"
                 if post.content.endswith(("png", "jpg", "jpeg")):
                     try:
                         post_text.config(height=10)
+                        img = ''
                         img = WebImage(url=post.content, width=640, height=640).get()
                         imagelab = tk.Label(post_frame, image=img)
                         imagelab.image = img  # Keep a reference to the image to prevent it from being garbage collected
@@ -462,6 +502,12 @@ class ForumApp:
                 button.bind("<Enter>", lambda event, button=button: button.configure(cursor="hand2"))
                 button.bind("<Leave>", lambda event, button=button: button.configure(cursor=""))
 
+    def view_gallery(self, post):
+        gallery_display_app = GalleryDisplay(self.root)
+        gallery_display_app.display_gallery(post.id)
+        # To start the application's main event loop
+        gallery_display_app.mainloop()
+
 
     def view_video(self, post):
         # Replace 'your_video_url' with the actual URL of the video you want to download
@@ -480,8 +526,6 @@ class ForumApp:
         url_parts = audio_url.split('/')
         audio_url = '/'.join(url_parts[:-1] + [url_parts[-1].replace('DASH', 'DASH_AUDIO_128')])
         response_audio = requests.get(audio_url)
-
-        print(audio_url)
 
         if response.status_code == 200 and response_audio.status_code == 200:
             file_name = os.path.join(PATH_TO_VIDEOS, f"video_{post.id}.mp4")
