@@ -109,7 +109,7 @@ class MediaPlayerApp(tk.Tk):
 
     def play_video(self, file):
         self.current_file = file
-        self.time_label.config(text="00:00:00 / " + self.get_duration_str())
+        self.time_label.configure(text="00:00:00 / " + self.get_duration_str())
         if not self.playing_video and self.current_file:
             media = self.instance.media_new(self.current_file)
             self.media_player.set_media(media)
