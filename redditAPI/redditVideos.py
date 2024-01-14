@@ -18,7 +18,7 @@ def get_video(post_id):
 
     # Access the subreddit and get the submission (post) by ID
     submission = reddit.submission(id=post_id)
-
+    print(submission.media)
     # Extract the video URL from the submission
     video_url = submission.media['reddit_video']['fallback_url']
     return video_url
