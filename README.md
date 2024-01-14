@@ -38,6 +38,14 @@ To run this project, you will need to add the following environment variables to
 `PATH_TO_IMAGES` (path to folder)
 `PATH_TO_FFMPEG` (path to ffmpeg\bin)
 
+## TODO
+- Add option to download videos and images.
+- Remove the separate video and audio only files.
+- Display gifs.
+- Improve (a lot) the UI.
+- Fix add/remove themes from database.
+- Suggest subreddits based on machine learning.
+
 
 
 ## 🔗 Links
