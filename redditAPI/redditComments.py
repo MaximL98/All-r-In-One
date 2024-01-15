@@ -1,4 +1,6 @@
 import praw
+import pandas as pd
+import os 
 from dotenv import dotenv_values
 
 config = dotenv_values("config.env")
