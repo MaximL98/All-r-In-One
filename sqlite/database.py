@@ -1,17 +1,8 @@
 import sqlite3
 from sqlite3 import Error
-import sys
-import os 
 from dotenv import dotenv_values
-from redditConn import getData
-from redditComments import get_comments
-from selectTheme import get_themes
-
-config = dotenv_values("config.env")
-PATH_TO_REDDIT_API = config["PATH_TO_REDDIT_API"]
-PATH_TO_SQLITE = config["PATH_TO_SQLITE"]
-sys.path.append(PATH_TO_REDDIT_API)
-sys.path.append(PATH_TO_SQLITE)
+from redditAPI import getData, get_comments
+from sqlite.selectTheme import get_themes
 
 # Function getting database connection
 def create_connection(path):

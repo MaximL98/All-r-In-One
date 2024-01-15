@@ -1,5 +1,5 @@
 import sqlite3
-from database import insert_comments
+from sqlite.database import insert_comments
 
 # Connect to the SQLite database file
 # Function getting database connection

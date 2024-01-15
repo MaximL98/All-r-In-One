@@ -1,14 +1,7 @@
 import requests
 import pandas as pd
-import cv2
 import sys
-import os 
-from dotenv import dotenv_values
-from connectToReddit import HEADERS
-
-config = dotenv_values("config.env")
-PATH_TO_REDDIT_API = config['PATH_TO_REDDIT_API']
-sys.path.append(PATH_TO_REDDIT_API)
+from redditAPI.connectToReddit import HEADERS
 
 sys.stdin.reconfigure(encoding='utf-8')
 sys.stdout.reconfigure(encoding='utf-8')
@@ -32,7 +25,6 @@ def getData(subreddit):
             'secure_media' : [post['data']['secure_media']],
             'link_url': [post['data']['url']],
             'name': [post['data']['name']],
-            'gallery_name': [post['data']['gallery_name']]
             })
         df = pd.concat([df, new_row], ignore_index=True)
     return(df)

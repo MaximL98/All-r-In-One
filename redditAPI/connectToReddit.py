@@ -1,16 +1,12 @@
 import requests
-import sys
-import os 
 from dotenv import dotenv_values
 
 config = dotenv_values("config.env")
-PATH_TO_REDDIT_API = config["PATH_TO_REDDIT_API"]
 CLIENT_ID = config['CLIENT_ID']
 SECRET_TOKEN = config['SECRET_TOKEN']
 PASSWORD = config["PASSWORD"]
 USERNAME = config["USERNAME"]
 
-sys.path.append(PATH_TO_REDDIT_API)
 
 auth = requests.auth.HTTPBasicAuth(CLIENT_ID, SECRET_TOKEN)
 

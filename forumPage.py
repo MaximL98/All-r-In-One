@@ -20,10 +20,8 @@ os.add_dll_directory('C:\\Program Files\\VideoLAN\\VLC')
 import vlc 
 
 import requests
-import cv2
 from io import BytesIO
 
-import tkvlc
 
 import pyaudio
 from pydub import AudioSegment
@@ -46,69 +44,21 @@ from linkpreview import link_preview
 import validators
 
 config = dotenv_values("config.env")
-PATH_TO_REDDIT_API = config["PATH_TO_REDDIT_API"]
-PATH_TO_SQLITE = config['PATH_TO_SQLITE']
 PATH_TO_VIDEOS = config['PATH_TO_VIDEOS']
 PATH_TO_FFMPEG = config["PATH_TO_FFMPEG"]
 PATH_TO_IMAGES = config["PATH_TO_IMAGES"]
 
-sys.path.append(PATH_TO_SQLITE)
-sys.path.append(PATH_TO_REDDIT_API)
 sys.path.append(PATH_TO_VIDEOS)
 sys.path.append(PATH_TO_FFMPEG)
 sys.path.append(PATH_TO_IMAGES)
 
-from redditVideos import get_video
-from selectData import get_data
-from database import refresh_data, insert_theme, remove_subreddit, remove_themes
-from selectComments import get_comments
-from selectTheme import get_themes
+from redditAPI import get_video
+from sqlite import get_data, refresh_data, insert_theme, remove_subreddit, remove_themes, get_comments, get_themes
 from gallery_display import GalleryDisplay
 
 def callback(url):
     # Open website 
     webbrowser.open(url) 
-
-class AudioPlayer:
-    def __init__(self, file_path):
-        self.file_path = file_path
-        self.chunk = 1024
-        self.paused = False
-        self.play_thread = None
-
-        # Open the audio file
-        self.wf = wave.open(self.file_path, 'rb')
-
-        # Initialize PyAudio
-        self.p = pyaudio.PyAudio()
-
-        # Open stream
-        self.stream = self.p.open(format=self.p.get_format_from_width(self.wf.getsampwidth()),
-                                  channels=self.wf.getnchannels(),
-                                  rate=self.wf.getframerate(),
-                                  output=True)
-
-    def play(self):
-        data = self.wf.readframes(self.chunk)
-        while data:
-            while self.paused:
-                time.sleep(0.1)
-            self.stream.write(data)
-            data = self.wf.readframes(self.chunk)
-
-    def start(self):
-        self.play_thread = threading.Thread(target=self.play)
-        self.play_thread.start()
-
-    def pause(self):
-        self.paused = True
-
-    def unpause(self):
-        self.paused = False
-
-    def stop(self):
-        #self.stream.close()
-        self.p.terminate()
 
 class WebImage:
     def __init__(self, url, width=None, height=None):
