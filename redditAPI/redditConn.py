@@ -32,7 +32,6 @@ def getData(subreddit):
         'secure_media' : [post['data']['secure_media']],
         'link_url': [post['data']['url']],
         'name': [post['data']['name']],
-        ###'gallery_name': [post['data']['gallery_name']]
         })
         df = pd.concat([df, new_row], ignore_index=True)
     return(df)
