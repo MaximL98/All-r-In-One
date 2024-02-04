@@ -31,8 +31,6 @@ def get_gallery(post_id):
             list_of_images.append(source['u'])
             list_of_images_x.append(source['x'])
             list_of_images_y.append(source['y'])
-            #print('[%4dx%04d] %s' % (source['x'], source['y'], source['u']))
-    #print(list_of_images)
+            
     return list_of_images, list_of_images_x, list_of_images_y
 
-#get_gallery("18zxwz0")
