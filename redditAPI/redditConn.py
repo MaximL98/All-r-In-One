@@ -26,13 +26,13 @@ def getData(subreddit):
     for post in getRequests(HEADERS, subreddit).json()['data']['children']:
         # Append relevant data to dataframe
         new_row = pd.DataFrame({
-            'subreddit': [post['data']['subreddit']],
-            'title': [post['data']['title']],
-            'selftext': [post['data']['selftext']],
-            'secure_media' : [post['data']['secure_media']],
-            'link_url': [post['data']['url']],
-            'name': [post['data']['name']],
-            'gallery_name': [post['data']['gallery_name']]
-            })
+        'subreddit': [post['data']['subreddit']],
+        'title': [post['data']['title']],
+        'selftext': [post['data']['selftext']],
+        'secure_media' : [post['data']['secure_media']],
+        'link_url': [post['data']['url']],
+        'name': [post['data']['name']],
+        ###'gallery_name': [post['data']['gallery_name']]
+        })
         df = pd.concat([df, new_row], ignore_index=True)
     return(df)
