@@ -108,6 +108,10 @@ class GalleryDisplay(Toplevel):
 
     def update_image(self, index):
         # Create the WebImage object and get the tk_image
+        if self.x_size[index] > 2400:
+            self.x_size[index] = 2400
+        if self.y_size[index] > 1200:
+            self.y_size[index] = 1200
         web_image = WebImage(url=self.List_images[index],
                                 width=(self.x_size[index])//2 + 100, 
                                 height=(self.y_size[index])//2 + 100)
@@ -125,6 +129,11 @@ class GalleryDisplay(Toplevel):
         
         if self.img_no + 1 == len(self.List_images):
             self.button_forward['state'] = DISABLED
+        
+        if self.x_size[self.img_no] > 2400:
+            self.x_size[self.img_no] = 2400
+        if self.y_size[self.img_no] > 1200:
+            self.y_size[self.img_no] = 1200
 
         self.img = WebImage(url=self.List_images[self.img_no], width=(self.x_size[self.img_no])//2 + 100, height=(self.y_size[self.img_no])//2 + 100).get()
         self.label.configure(image=self.img)
@@ -139,6 +148,11 @@ class GalleryDisplay(Toplevel):
 
         if self.img_no - 1 == 0:
             self.button_back['state'] = DISABLED
+
+        if self.x_size[self.img_no] > 2400:
+            self.x_size[self.img_no] = 2400
+        if self.y_size[self.img_no] > 1200:
+            self.y_size[self.img_no] = 1200
 
         self.img = WebImage(url=self.List_images[self.img_no], width=(self.x_size[self.img_no])//2 + 100, height=(self.y_size[self.img_no])//2 + 100).get()
         self.label.configure(image=self.img)

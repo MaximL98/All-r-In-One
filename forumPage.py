@@ -445,9 +445,9 @@ class ForumApp:
 
                 if "gallery" in post.content:
                     post_text.config(height=10)
-                    play_img_path = os.path.join(PATH_TO_IMAGES, 'play.png')
+                    gallery_img_path = os.path.join(PATH_TO_IMAGES, 'gallery.png')
                     #play_img = PhotoImage(file=play_img_path)
-                    button_image = ImageTk.PhotoImage(Image.open(play_img_path))
+                    button_image = ImageTk.PhotoImage(Image.open(gallery_img_path))
                     display_gallery_button = customtkinter.CTkButton(master=post_frame,
                                                            image=button_image,
                                                            width=640,
