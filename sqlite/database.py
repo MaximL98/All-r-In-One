@@ -57,8 +57,8 @@ def delete_rows(connection, table_name, column_name , column):
 def refresh_data(theme):
     conn = create_connection('sqlite/allR.db')
     insert_data_sql = """
-    INSERT OR IGNORE INTO data (post_id, theme, subreddit, title, content, selftext)
-    VALUES (?, ?, ?, ?, ?, ?);
+    INSERT OR IGNORE INTO data (post_id, theme, subreddit, title, content, selftext, url)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
     """
     themes = get_themes()
     if themes != None:
@@ -70,7 +70,7 @@ def refresh_data(theme):
                     for i in range(2, len(DATA)):
                         # Data to be inserted
                         data = (DATA['name'][i][3:], key, 
-                            DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i], DATA['selftext'][i])
+                            DATA['subreddit'][i], DATA['title'][i], DATA['link_url'][i], DATA['selftext'][i], DATA['url'][i])
                         execute_query(conn, insert_data_sql, data)
 
 def insert_comments(post_id, comment_limit):
@@ -129,7 +129,8 @@ CREATE TABLE IF NOT EXISTS data (
     subreddit TEXT NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
-    selftext TEXT NOT NULL
+    selftext TEXT NOT NULL,
+    url TEXT NOT NULL
 );
 """
 execute_query(conn, create_data_table)  

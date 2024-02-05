@@ -64,6 +64,7 @@ from database import refresh_data, insert_theme, remove_subreddit, remove_themes
 from selectComments import get_comments
 from selectTheme import get_themes
 from gallery_display import GalleryDisplay
+from gif_display import GifDisplay
 
 def callback(url):
     # Open website 
@@ -135,13 +136,14 @@ class WebImage:
 
 
 class Post:
-    def __init__(self, title, content, subreddit, id, theme, selftext):
+    def __init__(self, title, content, subreddit, id, theme, selftext, url):
         self.id = id
         self.title = title
         self.content = content
         self.subreddit = subreddit
         self.theme = theme
         self.selftext = selftext
+        self.url = url
         self.comments = []
 
 
@@ -219,7 +221,7 @@ class ForumApp:
 
                 selected_data = get_data(theme)
                 for data in selected_data:
-                    self.posts.append(Post(data[3], data[4], data[2], data[0], theme, data[5]))
+                    self.posts.append(Post(data[3], data[4], data[2], data[0], theme, data[5], data[6]))
 
                 # Change the title_label text
                 page_title = theme
@@ -360,7 +362,7 @@ class ForumApp:
             for key in themes.keys():
                 selected_data = get_data(key)
                 for data in selected_data:
-                    self.posts.append(Post(data[3], data[4], data[2], data[0], key, data[5]))
+                    self.posts.append(Post(data[3], data[4], data[2], data[0], key, data[5], data[6]))
             self.add_post_buttons()
 
         # Bind the mouse wheel event to the main window
@@ -493,7 +495,24 @@ class ForumApp:
                                                            command=lambda p=post: self.view_video(p))
                     #button = tk.Button(post_frame, image=play_img, command=lambda p=post: self.view_video(p))
                     image_button.grid(row=1, column=0, sticky="nsew")
-            
+
+                if "gif" in post.content:
+                    post_text.config(height=10)
+                    play_img_path = os.path.join(PATH_TO_IMAGES, 'play.png')
+                    #play_img = PhotoImage(file=play_img_path)
+                    button_image = ImageTk.PhotoImage(Image.open(play_img_path))
+                    image_button = customtkinter.CTkButton(master=post_frame,
+                                                           image=button_image,
+                                                           width=640,
+                                                           height=640,
+                                                           border_width=0,
+                                                           fg_color='#1c1c1c',
+                                                           hover_color='#2e2d2d',
+                                                           text='',
+                                                           command=lambda p=post: self.view_gif(p))
+                    #button = tk.Button(post_frame, image=play_img, command=lambda p=post: self.view_video(p))
+                    image_button.grid(row=1, column=0, sticky="nsew")
+
                 button = ttk.Button(post_frame, text="View Comments", command=lambda p=post: self.view_comments(p))
                 button.grid(row=2, column=0, sticky="w")
 
@@ -508,9 +527,23 @@ class ForumApp:
         # To start the application's main event loop
         gallery_display_app.mainloop()
 
+    def view_gif(self, post):
+        gif_url = post.url
+        # Download the video using requests
+        response = requests.get(gif_url)
+
+        if response.status_code == 200:
+            file_name_video = os.path.join(PATH_TO_VIDEOS, f"video_only_{post.id}.gif")
+            with open(file_name_video, 'wb') as video_file:
+                video_file.write(response.content)
+            print(f"Gif downloaded successfully: {file_name_video}")
+
+        display_gif_app = GifDisplay()
+        display_gif_app.display_gif(file_name_video)
+
+
 
     def view_video(self, post):
-        # Replace 'your_video_url' with the actual URL of the video you want to download
         video_url = get_video(post.id)
 
         # Download the video using requests
@@ -596,7 +629,7 @@ class ForumApp:
             for key in themes.keys():
                 selected_data = get_data(key)
                 for data in selected_data:
-                    self.posts.append(Post(data[3], data[4], data[2], data[0], key, data[5]))
+                    self.posts.append(Post(data[3], data[4], data[2], data[0], key, data[5], data[6]))
 
 
         # Clear existing widgets in the scrollable frame
